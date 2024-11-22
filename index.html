@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schema LLM Instructions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+        h2 {
+            font-size: 22px;
+            color: #34495e;
+            margin-top: 20px;
+        }
+        h3 {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-left: 20px;
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .property {
+            margin-left: 40px;
+            font-size: 14px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Schema LLM Instructions</h1>
+    <p><strong>Description :</strong> Schema LLM Instructions is a Schema.org extension that allows for providing instructions and technical parameters to large language models (LLMs). It aims to improve communication between humans and LLMs by enabling users to specify precise tasks, constraints, and preferences for text generation.</p>
+
+    <h2>Categories and Properties</h2>
+    <div id="content">
+        <p>Loading data...</p>
+    </div>
+
+    <script>
+        // URL brute du fichier JSON sur GitHub
+        const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/IIMInstructions.json";
+
+        // Fonction pour récupérer et afficher les classes avec leurs propriétés
+        async function fetchAndDisplayClassesWithProperties() {
+            const contentDiv = document.getElementById('content');
+
+            try {
+                const response = await fetch(jsonURL);
+                if (!response.ok) {
+                    throw new Error(`Erreur lors de la récupération du fichier : ${response.statusText}`);
+                }
+                const jsonData = await response.json();
+
+                // Extraire les classes et propriétés
+                const classes = jsonData["@graph"].filter(item => item["@type"] === "rdfs:Class");
+                const properties = jsonData["@graph"].filter(item => item["@type"] === "rdf:Property");
+
+                // Regrouper les propriétés par classe
+                const propertiesByClass = {};
+                properties.forEach(prop => {
+                    const domain = prop["rdfs:domain"]?.["@id"];
+                    if (domain) {
+                        if (!propertiesByClass[domain]) {
+                            propertiesByClass[domain] = [];
+                        }
+                        propertiesByClass[domain].push(prop);
+                    }
+                });
+
+                // Afficher chaque classe avec ses propriétés
+                contentDiv.innerHTML = '';
+                classes.forEach(cls => {
+                    const classTitle = document.createElement('h2');
+                    classTitle.textContent = cls["rdfs:label"] || cls["@id"];
+                    contentDiv.appendChild(classTitle);
+
+                    const description = document.createElement('p');
+                    description.textContent = cls["rdfs:comment"] || "No description available.";
+                    contentDiv.appendChild(description);
+
+                    // Ajouter les propriétés associées à la classe
+                    const classProperties = propertiesByClass[cls["@id"]] || [];
+                    if (classProperties.length > 0) {
+                        classProperties.forEach(prop => {
+                            const propTitle = document.createElement('h3');
+                            propTitle.textContent = prop["rdfs:label"] || prop["@id"];
+                            contentDiv.appendChild(propTitle);
+
+                            const propDescription = document.createElement('p');
+                            propDescription.textContent = prop["rdfs:comment"] || "No description available.";
+                            contentDiv.appendChild(propDescription);
+
+                            const domainRangeInfo = document.createElement('p');
+                            domainRangeInfo.className = 'property';
+                            domainRangeInfo.textContent = `Domain: ${cls["rdfs:label"] || cls["@id"]}, Range: ${prop["rdfs:range"]?.["@id"] || "N/A"}`;
+                            contentDiv.appendChild(domainRangeInfo);
+                        });
+                    } else {
+                        const noProperties = document.createElement('p');
+                        noProperties.className = 'property';
+                        noProperties.textContent = "No properties associated with this class.";
+                        contentDiv.appendChild(noProperties);
+                    }
+                });
+            } catch (error) {
+                contentDiv.innerHTML = `<p class="error">${error.message}</p>`;
+            }
+        }
+
+        // Charger et afficher les classes avec leurs propriétés
+        fetchAndDisplayClassesWithProperties();
+    </script>
+</body>
+</html>
