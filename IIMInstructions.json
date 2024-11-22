@@ -322,13 +322,15 @@
     "@id": "llmInstructions:energyEfficiencyMode",
     "@type": "rdf:Property",
     "rdfs:label": "Energy Efficiency Mode",
-    "rdfs:comment": "Optimizes resource usage by adjusting energy efficiency. Possible values: 'low', 'medium', 'high'.",
+    "rdfs:comment": "Optimizes resource usage by adjusting energy efficiency. Multiple values can be selected from: 'low', 'medium', 'high'.",
     "rdfs:domain": {
         "@id": "llmInstructions:PerformanceAndConstraints"
     },
     "rdfs:range": {
         "@id": "schema:Text"
-    }
+    },
+    "schema:validValues": ["low", "medium", "high"],
+    "schema:isMultipleSelectionAllowed": false
 },
 {
     "@id": "llmInstructions:processingMode",
