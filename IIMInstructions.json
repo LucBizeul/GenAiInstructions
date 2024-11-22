@@ -10,8 +10,8 @@
       "@type": "schema:CreativeWork",
       "schema:author": {
         "@type": "schema:Person",
-        "schema:name": "Votre Nom",
-        "schema:url": "https://votre-lien-ou-site.com"
+        "schema:name": "LucBizeul",
+        "schema:url": "https://github.com/LucBizeul/"
       },
       "schema:dateCreated": "2024-11-22",
       "schema:version": "0.1 beta"
