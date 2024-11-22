@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Instruction Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2 {
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+        h2 {
+            font-size: 22px;
+            color: #34495e;
+        }
+        .form-container {
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .instructions-container {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>LLM Instruction Builder</h1>
+    <div class="form-container" id="form-container">
+        <p>Loading parameters...</p>
+    </div>
+
+    <h2>Generated Instructions</h2>
+    <div class="instructions-container" id="instructions">
+        <p>Your instructions will appear here.</p>
+    </div>
+
+    <script>
+        const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/IIMInstructions.json";
+
+        // Fetch JSON data and build the form dynamically
+        async function fetchAndBuildForm() {
+            const formContainer = document.getElementById('form-container');
+            const instructionsContainer = document.getElementById('instructions');
+            const instructions = {};
+
+            try {
+                const response = await fetch(jsonURL);
+                if (!response.ok) throw new Error(`Error fetching JSON: ${response.statusText}`);
+                const jsonData = await response.json();
+
+                // Extract parameters (properties)
+                const properties = jsonData["@graph"].filter(item => item["@type"] === "rdf:Property");
+
+                // Build the form dynamically
+                formContainer.innerHTML = '';
+                properties.forEach(prop => {
+                    const label = document.createElement('label');
+                    label.textContent = prop["rdfs:label"] || prop["@id"];
+                    formContainer.appendChild(label);
+
+                    const rangeType = prop["rdfs:range"]?.["@id"] || "schema:Text";
+                    if (rangeType === "schema:Number") {
+                        // Create a number input
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.min = prop["schema:minValue"] || 0;
+                        input.max = prop["schema:maxValue"] || 100;
+                        input.value = (input.min + input.max) / 2; // Default to midpoint
+                        input.addEventListener('input', () => updateInstructions(prop["@id"], input.value));
+                        formContainer.appendChild(input);
+                    } else if (rangeType === "schema:Boolean") {
+                        // Create a checkbox for boolean values
+                        const input = document.createElement('input');
+                        input.type = 'checkbox';
+                        input.addEventListener('change', () => updateInstructions(prop["@id"], input.checked));
+                        formContainer.appendChild(input);
+                    } else if (rangeType === "schema:Text") {
+                        // Create a dropdown for text values
+                        const select = document.createElement('select');
+                        const options = prop["schema:validValues"] || ["Option 1", "Option 2"];
+                        options.forEach(option => {
+                            const opt = document.createElement('option');
+                            opt.value = option;
+                            opt.textContent = option;
+                            select.appendChild(opt);
+                        });
+                        select.addEventListener('change', () => updateInstructions(prop["@id"], select.value));
+                        formContainer.appendChild(select);
+                    }
+                });
+
+                // Update the instructions dynamically
+                function updateInstructions(parameter, value) {
+                    instructions[parameter] = value;
+                    instructionsContainer.textContent = JSON.stringify(instructions, null, 4);
+                }
+            } catch (error) {
+                formContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        }
+
+        // Load form and parameters on page load
+        fetchAndBuildForm();
+    </script>
+</body>
+</html>
