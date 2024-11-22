@@ -342,7 +342,10 @@
     },
     "rdfs:range": {
         "@id": "schema:Text"
-    }
+    },
+    "schema:validValues": ["fast", "balanced", "highQuality"],
+    "schema:isMultipleSelectionAllowed": false
+
 },
 {
     "@id": "llmInstructions:computeBudget",
