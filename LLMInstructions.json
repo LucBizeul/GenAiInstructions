@@ -16,6 +16,7 @@
       "schema:dateCreated": "2024-11-22",
       "schema:version": "0.1 beta"
     },
+    
     {
     "@id": "llmInstructions:CreativityControl",
     "@type": "rdfs:Class",
