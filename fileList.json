@@ -3,7 +3,7 @@
     "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-CreativotyControl.json",
     "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-OutputControl.json",
     "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-PerformanceAndConstraints.json",
-    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-SafetyAndFilters.json"
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-SafetyAndFilters.json",
     "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-Xia.json"
 
   ]
