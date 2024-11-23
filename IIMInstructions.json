@@ -294,7 +294,11 @@
     },
     "rdfs:range": {
         "@id": "schema:Text"
-    }
+    },
+    "schema:validValues": ["none", "low", "medium", "high"],
+    "schema:isMultipleSelectionAllowed": false
+
+},
 },
 {
     "@id": "llmInstructions:PerformanceAndConstraints",
@@ -407,7 +411,10 @@
     },
     "rdfs:range": {
         "@id": "schema:Text"
-    }
+    },
+    "schema:validValues": ["none", "low", "medium", "high"],
+    "schema:isMultipleSelectionAllowed": false
+
 }
 
 
