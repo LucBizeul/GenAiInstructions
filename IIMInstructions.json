@@ -297,9 +297,7 @@
     },
     "schema:validValues": ["none", "low", "medium", "high"],
     "schema:isMultipleSelectionAllowed": false
-
-},
-},
+}
 {
     "@id": "llmInstructions:PerformanceAndConstraints",
     "@type": "rdfs:Class",
