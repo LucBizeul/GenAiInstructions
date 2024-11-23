@@ -1,8 +1,10 @@
 {
   "files": [
-    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions.json",
-    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-Xia.json",
-    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/CreativityControl.json",
-    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/OutputControl.json"
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-CreativotyControl.json",
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-OutputControl.json",
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-PerformanceAndConstraints.json",
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-SafetyAndFilters.json"
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions-LLMInstructions-Xia.json"
+
   ]
 }
