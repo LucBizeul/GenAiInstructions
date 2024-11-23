@@ -1,0 +1,8 @@
+{
+  "files": [
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions.json",
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/XIA.json",
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/CreativityControl.json",
+    "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/OutputControl.json"
+  ]
+}
