@@ -1,0 +1,91 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "llmInstructions": "http://example.org/llmInstructions#"
+  },
+  "@graph": [
+    {
+      "@id": "llmInstructions:XIA",
+      "@type": "rdfs:Class",
+      "rdfs:label": "XIA",
+      "rdfs:comment": "Instructions related to interpretability, explainability, and transparency of language models.",
+      "rdfs:subClassOf": {
+        "@id": "schema:Thing"
+      }
+    },
+    {
+      "@id": "llmInstructions:enableAttentionAnalysis",
+      "@type": "rdf:Property",
+      "rdfs:label": "Enable Attention Analysis",
+      "rdfs:comment": "Highlights specific parts of the input text that the model focused on while generating its response.",
+      "rdfs:domain": {
+        "@id": "llmInstructions:XIA"
+      },
+      "rdfs:range": {
+        "@id": "schema:Boolean"
+      }
+    },
+    {
+      "@id": "llmInstructions:displayNeuronActivations",
+      "@type": "rdf:Property",
+      "rdfs:label": "Display Neuron Activations",
+      "rdfs:comment": "Provides insights into the internal workings of the model by showing how information is processed across layers.",
+      "rdfs:domain": {
+        "@id": "llmInstructions:XIA"
+      },
+      "rdfs:range": {
+        "@id": "schema:Boolean"
+      }
+    },
+    {
+      "@id": "llmInstructions:provideJustifications",
+      "@type": "rdf:Property",
+      "rdfs:label": "Provide Justifications for Each Response",
+      "rdfs:comment": "Accompanies each response with a justification, explanation, or reasoning that led to the answer.",
+      "rdfs:domain": {
+        "@id": "llmInstructions:XIA"
+      },
+      "rdfs:range": {
+        "@id": "schema:Boolean"
+      }
+    },
+    {
+      "@id": "llmInstructions:useExamplesAndCounterExamples",
+      "@type": "rdf:Property",
+      "rdfs:label": "Use Examples and Counterexamples to Illustrate Responses",
+      "rdfs:comment": "Examples make explanations more concrete, while counterexamples clarify how input changes affect the output.",
+      "rdfs:domain": {
+        "@id": "llmInstructions:XIA"
+      },
+      "rdfs:range": {
+        "@id": "schema:Boolean"
+      }
+    },
+    {
+      "@id": "llmInstructions:explainStepByStep",
+      "@type": "rdf:Property",
+      "rdfs:label": "Explain Reasoning Step by Step",
+      "rdfs:comment": "Requests the model to detail its reasoning to clarify the steps followed.",
+      "rdfs:domain": {
+        "@id": "llmInstructions:XIA"
+      },
+      "rdfs:range": {
+        "@id": "schema:Boolean"
+      }
+    },
+    {
+      "@id": "llmInstructions:activateExplanationMode",
+      "@type": "rdf:Property",
+      "rdfs:label": "Activate Explanation Mode",
+      "rdfs:comment": "Requests the model to activate all available explainability options to maximize transparency.",
+      "rdfs:domain": {
+        "@id": "llmInstructions:XIA"
+      },
+      "rdfs:range": {
+        "@id": "schema:Boolean"
+      }
+    }
+  ]
+}
