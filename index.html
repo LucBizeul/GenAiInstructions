@@ -103,12 +103,15 @@
 
     <h2>Categories and Properties</h2>
     <div id="content">
-        <div class="loading">Loading data...</div>
+        <div class="loading">Loading data from: <span id="jsonUrl"></span></div>
     </div>
 
     <script>
-        // URL brute du fichier JSON sur GitHub
-        const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions.json";
+        // URL du fichier JSON sur GitHub raw
+        const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/LLMInstructions.json";
+        
+        // Afficher l'URL dans le message de chargement
+        document.getElementById('jsonUrl').textContent = jsonURL;
 
         // Fonction pour afficher les erreurs de manière détaillée
         function displayError(error, details = null) {
@@ -124,8 +127,13 @@
             errorMessage.className = 'error-message';
             errorMessage.textContent = error.message;
 
+            const errorUrl = document.createElement('div');
+            errorUrl.className = 'error-details';
+            errorUrl.innerHTML = `<strong>Attempted to load from:</strong><br>${jsonURL}`;
+
             errorContainer.appendChild(errorTitle);
             errorContainer.appendChild(errorMessage);
+            errorContainer.appendChild(errorUrl);
 
             if (details) {
                 const errorDetails = document.createElement('div');
@@ -140,6 +148,7 @@
             errorSuggestion.innerHTML = `
                 <strong>Suggestions:</strong>
                 <ul>
+                    <li>Vérifiez que l'URL est correcte: ${jsonURL}</li>
                     <li>Vérifiez votre connexion internet</li>
                     <li>Assurez-vous que le fichier JSON est accessible</li>
                     <li>Vérifiez que le fichier JSON est valide</li>
