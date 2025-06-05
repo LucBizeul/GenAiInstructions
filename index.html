@@ -34,8 +34,66 @@
             margin-left: 40px;
             font-size: 14px;
         }
-        .error {
-            color: red;
+        .error-container {
+            background-color: #fff3f3;
+            border: 1px solid #ffcdd2;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .error-title {
+            color: #d32f2f;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .error-title::before {
+            content: "⚠️";
+            margin-right: 10px;
+        }
+        .error-message {
+            color: #b71c1c;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .error-details {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #495057;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .error-suggestion {
+            color: #1976d2;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+        }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #666;
+        }
+        .loading::after {
+            content: "⏳";
+            margin-left: 10px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -45,12 +103,54 @@
 
     <h2>Categories and Properties</h2>
     <div id="content">
-        <p>Loading data...</p>
+        <div class="loading">Loading data...</div>
     </div>
 
     <script>
         // URL brute du fichier JSON sur GitHub
         const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/LLMInstructions.json";
+
+        // Fonction pour afficher les erreurs de manière détaillée
+        function displayError(error, details = null) {
+            const contentDiv = document.getElementById('content');
+            const errorContainer = document.createElement('div');
+            errorContainer.className = 'error-container';
+
+            const errorTitle = document.createElement('div');
+            errorTitle.className = 'error-title';
+            errorTitle.textContent = 'Error Loading Data';
+
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = error.message;
+
+            errorContainer.appendChild(errorTitle);
+            errorContainer.appendChild(errorMessage);
+
+            if (details) {
+                const errorDetails = document.createElement('div');
+                errorDetails.className = 'error-details';
+                errorDetails.textContent = details;
+                errorContainer.appendChild(errorDetails);
+            }
+
+            // Ajouter des suggestions de résolution
+            const errorSuggestion = document.createElement('div');
+            errorSuggestion.className = 'error-suggestion';
+            errorSuggestion.innerHTML = `
+                <strong>Suggestions:</strong>
+                <ul>
+                    <li>Vérifiez votre connexion internet</li>
+                    <li>Assurez-vous que le fichier JSON est accessible</li>
+                    <li>Vérifiez que le fichier JSON est valide</li>
+                    <li>Réessayez de recharger la page</li>
+                </ul>
+            `;
+            errorContainer.appendChild(errorSuggestion);
+
+            contentDiv.innerHTML = '';
+            contentDiv.appendChild(errorContainer);
+        }
 
         // Fonction pour récupérer et afficher les classes avec leurs propriétés
         async function fetchAndDisplayClassesWithProperties() {
@@ -59,13 +159,28 @@
             try {
                 const response = await fetch(jsonURL);
                 if (!response.ok) {
-                    throw new Error(`Erreur lors de la récupération du fichier : ${response.statusText}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const jsonData = await response.json();
+                
+                let jsonData;
+                try {
+                    jsonData = await response.json();
+                } catch (parseError) {
+                    throw new Error(`Invalid JSON format: ${parseError.message}`);
+                }
+
+                // Vérifier la structure du JSON
+                if (!jsonData["@graph"]) {
+                    throw new Error("Invalid JSON structure: missing @graph property");
+                }
 
                 // Extraire les classes et propriétés
                 const classes = jsonData["@graph"].filter(item => item["@type"] === "rdfs:Class");
                 const properties = jsonData["@graph"].filter(item => item["@type"] === "rdf:Property");
+
+                if (classes.length === 0) {
+                    throw new Error("No classes found in the JSON data");
+                }
 
                 // Regrouper les propriétés par classe
                 const propertiesByClass = {};
@@ -115,7 +230,7 @@
                     }
                 });
             } catch (error) {
-                contentDiv.innerHTML = `<p class="error">${error.message}</p>`;
+                displayError(error, error.stack);
             }
         }
 
