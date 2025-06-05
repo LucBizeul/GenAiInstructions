@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Instruction Builder</title>
+    <title>GenAiInstructions - Form Builder</title>
     <!-- Use older, more stable version of Ajv -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/6.12.6/ajv.min.js"></script>
     <style>
@@ -536,7 +536,17 @@
         const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/GenAiInstructions.json";
         const schemaURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/schema.json";
 
+        // Variables globales
         let instructions = {};
+        let validator = null;
+        let validate = null;
+
+        // Initialiser Ajv au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            validator = new Ajv();
+            initializeValidator();
+            loadForm(); // Charger le formulaire au démarrage
+        });
         function updateInstructions(parameter, value) {
             instructions[parameter] = value;
             updateInstructionsDisplay(); // Appel sans await mais la fonction gère l'affichage
@@ -705,6 +715,78 @@
             updateInstructions('genAiInstructions:cognitiveLevel', select.value);
 
             return container;
+        }
+
+        // Fonction pour créer un slider simple
+        function createSimpleSlider(property, min, max, step) {
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
+
+            const label = document.createElement('label');
+            label.htmlFor = property["@id"];
+            label.textContent = property["rdfs:label"] || property["@id"].split(':')[1];
+            formGroup.appendChild(label);
+
+            if (property["rdfs:comment"]) {
+                const helpText = document.createElement('div');
+                helpText.className = 'help-text';
+                helpText.textContent = property["rdfs:comment"];
+                formGroup.appendChild(helpText);
+            }
+
+            // Container pour le slider
+            const sliderContainer = document.createElement('div');
+            sliderContainer.className = 'slider-container';
+            sliderContainer.style.position = 'relative';
+
+            // Slider input
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.id = property["@id"];
+            slider.min = min;
+            slider.max = max;
+            slider.step = step;
+            slider.value = property["schema:defaultValue"] || min;
+
+            // Tooltip pour afficher la valeur
+            const tooltip = document.createElement('div');
+            tooltip.className = 'slider-tooltip';
+            tooltip.textContent = slider.value;
+            sliderContainer.appendChild(tooltip);
+
+            // Labels min/max
+            const labels = document.createElement('div');
+            labels.className = 'slider-labels';
+            labels.innerHTML = `<span>${min}</span><span>${max}</span>`;
+
+            // Event listeners
+            slider.addEventListener('input', function() {
+                tooltip.textContent = this.value;
+                const percent = ((this.value - min) / (max - min)) * 100;
+                tooltip.style.left = `${percent}%`;
+                updateInstructions(property["@id"], parseFloat(this.value));
+            });
+
+            slider.addEventListener('mouseenter', function() {
+                tooltip.style.opacity = '1';
+            });
+
+            slider.addEventListener('mouseleave', function() {
+                tooltip.style.opacity = '0';
+            });
+
+            // Initialiser la position du tooltip
+            const initialPercent = ((slider.value - min) / (max - min)) * 100;
+            tooltip.style.left = `${initialPercent}%`;
+
+            sliderContainer.appendChild(slider);
+            formGroup.appendChild(sliderContainer);
+            formGroup.appendChild(labels);
+
+            // Initialiser la valeur dans les instructions
+            updateInstructions(property["@id"], parseFloat(slider.value));
+
+            return formGroup;
         }
 
         // Modifier createFormField pour utiliser createSimpleSlider pour tous les sliders numériques
