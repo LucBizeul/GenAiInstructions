@@ -4,169 +4,499 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LLM Instruction Builder</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.12.0/ajv.min.js"></script>
+    <!-- Use older, more stable version of Ajv -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/6.12.6/ajv.min.js"></script>
     <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 0.5rem;
+            --transition: all 0.2s ease-in-out;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f9f9f9;
-            color: #333;
-            line-height: 1.6;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 2rem;
         }
-        h1, h2 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-        h1 {
-            font-size: 32px;
-            text-align: center;
-            margin-top: 30px;
-        }
-        h2 {
-            font-size: 24px;
-            color: #34495e;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-        }
-        .form-container {
-            max-width: 800px;
-            margin: 0 auto 30px;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-        .section-title {
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .help-text {
-            font-size: 14px;
-            color: #666;
-            margin-top: 5px;
-            font-style: italic;
-        }
-        select, input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        select:focus, input:focus {
-            border-color: #3498db;
-            outline: none;
-            box-shadow: 0 0 5px rgba(52,152,219,0.3);
-        }
-        .instructions-container {
-            max-width: 800px;
+
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0 1rem;
         }
-        pre {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: var(--card-background);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-description {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            line-height: 1.5;
+            padding: 0.75rem;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: var(--radius);
+            border-left: 3px solid var(--primary-color);
+            margin-top: 0.5rem;
+        }
+
+        .section-description::before {
+            content: "ℹ️";
+            margin-right: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-group label::after {
+            content: "?";
+            margin-left: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.1);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: help;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--card-background);
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="number"]:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+            accent-color: var(--primary-color);
+        }
+
+        .help-text {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: var(--radius);
+            border-left: 3px solid var(--primary-color);
+            line-height: 1.5;
+        }
+
+        .help-text::before {
+            content: "ℹ️";
+            margin-right: 0.5rem;
+        }
+
+        .instructions-container {
+            background: var(--card-background);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .instructions-container h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        #instructions {
+            background: #1e1e1e;
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
             overflow-x: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.4;
         }
-        .error {
-            color: #e74c3c;
-            padding: 10px;
-            background: #fde8e8;
-            border-radius: 4px;
-            margin: 10px 0;
+
+        #instructions pre {
+            margin: 0;
+            color: #d4d4d4;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
         }
-        .success {
-            color: #27ae60;
-            padding: 10px;
-            background: #e8f8e8;
-            border-radius: 4px;
-            margin: 10px 0;
-        }
-        .validation-error {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
-        }
+
         .validation-success {
-            color: #27ae60;
-            font-size: 14px;
-            margin-top: 5px;
+            color: var(--success-color);
+            font-weight: 500;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: var(--radius);
+            border: 1px solid var(--success-color);
         }
+
+        .validation-error {
+            color: var(--error-color);
+            font-weight: 500;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: var(--radius);
+            border: 1px solid var(--error-color);
+        }
+
         .copy-button {
-            background: #3498db;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
             cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s;
+            font-weight: 500;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 1rem;
         }
+
         .copy-button:hover {
-            background: #2980b9;
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
         }
-        .copy-button:active {
-            background: #2472a4;
-        }
+
         .cognitive-level-section {
-            background: #f0f7ff;
-            border: 1px solid #b3d4ff;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
+            background: var(--card-background);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
         }
+
+        .cognitive-level-section:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .cognitive-level-section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
         .cognitive-level-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
+
         .cognitive-level-card {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--background-color);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
         }
-        .cognitive-level-card h4 {
-            color: #2c3e50;
-            margin: 0 0 10px 0;
-            font-size: 18px;
+
+        .cognitive-level-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
         }
+
+        .cognitive-level-card h3 {
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
         .cognitive-level-card p {
-            margin: 5px 0;
-            color: #666;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
         }
+
         .cognitive-level-card .example {
-            font-style: italic;
-            color: #3498db;
-            margin-top: 10px;
+            font-size: 0.875rem;
+            color: var(--text-color);
+            padding: 0.75rem;
+            background: var(--card-background);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            margin-top: 0.75rem;
+        }
+
+        .cognitive-level-selector {
+            margin-top: 1.5rem;
+        }
+
+        .cognitive-level-selector label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .cognitive-level-selector select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background-color: var(--card-background);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cognitive-level-selector select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .cognitive-level-selector select option {
+            padding: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                grid-template-columns: 1fr;
+            }
+
+            .instructions-container {
+                position: static;
+                margin-top: 2rem;
+            }
+
+            .cognitive-level-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error state */
+        .error {
+            color: var(--error-color);
+            background: rgba(239, 68, 68, 0.1);
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--error-color);
+            margin: 1rem 0;
+        }
+
+        /* Slider Styles */
+        .slider-container {
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .slider-container input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            outline: none;
+            margin: 1rem 0;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .slider-container input[type="range"]:hover::-webkit-slider-thumb {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .slider-container input[type="range"]:hover::-moz-range-thumb {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .slider-marks {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            margin-top: -0.5rem;
+        }
+
+        .slider-mark {
+            position: relative;
+            width: 1px;
+            height: 8px;
+            background: var(--border-color);
+        }
+
+        .slider-mark::after {
+            content: attr(data-value);
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .slider-value {
+            position: absolute;
+            top: -1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .slider-container:hover .slider-value {
+            opacity: 1;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-light);
         }
     </style>
 </head>
@@ -236,192 +566,326 @@
     </div>
 
     <script>
-        const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/LLMInstructions.json";
-        const schemaURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/schema.json";
-        let ajv = new Ajv({ allErrors: true });
-        let validate;
-        let instructions = {};
-
-        // Fetch JSON Schema and initialize validator
-        async function initializeValidator() {
-            try {
-                const response = await fetch(schemaURL);
-                if (!response.ok) throw new Error(`Error fetching schema: ${response.statusText}`);
-                const schema = await response.json();
-                validate = ajv.compile(schema);
-            } catch (error) {
-                console.error('Error initializing validator:', error);
+        // Initialize after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Ajv === 'undefined') {
+                console.error('Ajv library not loaded');
+                document.getElementById('form-container').innerHTML = '<p class="error">Error: Validation library not loaded. Please check your internet connection and refresh the page.</p>';
+                return;
             }
-        }
 
-        // Fetch JSON data and build form
-        async function loadForm() {
-            try {
-                const response = await fetch(jsonURL);
-                if (!response.ok) throw new Error(`Error fetching JSON: ${response.statusText}`);
-                const data = await response.json();
-                
-                const formContainer = document.getElementById('form-container');
-                formContainer.innerHTML = ''; // Clear loading message
+            const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/LLMInstructions.json";
+            const schemaURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/schema.json";
+            let validator = new Ajv({ allErrors: true });
+            let validate;
+            let instructions = {};
 
-                // Group properties by class
-                const classes = {};
-                for (const [key, value] of Object.entries(data.properties)) {
-                    if (key.includes(':')) {
-                        const [className, propName] = key.split(':');
-                        if (!classes[className]) {
-                            classes[className] = {};
+            // Fetch JSON Schema and initialize validator
+            async function initializeValidator() {
+                try {
+                    const response = await fetch(schemaURL, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
                         }
-                        classes[className][propName] = value;
-                    }
+                    });
+                    if (!response.ok) throw new Error(`Error fetching schema: ${response.statusText}`);
+                    const schema = await response.json();
+                    validate = validator.compile(schema);
+                    console.log('Schema loaded:', schema);
+                } catch (error) {
+                    console.error('Error initializing validator:', error);
                 }
+            }
 
-                // Create sections for each class
-                for (const [className, properties] of Object.entries(classes)) {
-                    const section = document.createElement('div');
-                    section.className = 'section';
+            // Fetch JSON data and build form
+            async function loadForm() {
+                try {
+                    const response = await fetch(jsonURL, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!response.ok) throw new Error(`Error fetching JSON: ${response.statusText}`);
+                    const data = await response.json();
+                    console.log('JSON data loaded:', data);
                     
-                    const sectionTitle = document.createElement('h3');
-                    sectionTitle.className = 'section-title';
-                    sectionTitle.textContent = className.replace('llmInstructions:', '');
-                    section.appendChild(sectionTitle);
+                    const formContainer = document.getElementById('form-container');
+                    formContainer.innerHTML = ''; // Clear loading message
 
-                    // Add properties for this class
-                    for (const [propName, prop] of Object.entries(properties)) {
-                        const formGroup = document.createElement('div');
-                        formGroup.className = 'form-group';
+                    // Extract classes and properties from @graph
+                    const classes = data["@graph"].filter(item => item["@type"] === "rdfs:Class");
+                    const properties = data["@graph"].filter(item => item["@type"] === "rdf:Property");
+                    
+                    console.log('Classes found:', classes);
+                    console.log('Properties found:', properties);
 
-                        const label = document.createElement('label');
-                        label.htmlFor = propName;
-                        label.textContent = propName;
-                        formGroup.appendChild(label);
+                    // Group properties by domain
+                    const propertiesByDomain = {};
+                    properties.forEach(prop => {
+                        const domain = prop["rdfs:domain"]?.["@id"] || "other";
+                        if (!propertiesByDomain[domain]) {
+                            propertiesByDomain[domain] = [];
+                        }
+                        propertiesByDomain[domain].push(prop);
+                    });
+                    
+                    console.log('Properties by domain:', propertiesByDomain);
 
-                        // Add help text if available
-                        if (prop.description) {
-                            const helpText = document.createElement('div');
-                            helpText.className = 'help-text';
-                            helpText.textContent = prop.description;
-                            formGroup.appendChild(helpText);
+                    // Create sections for each class
+                    classes.forEach(cls => {
+                        console.log('Processing class:', cls);
+                        const section = document.createElement('div');
+                        section.className = 'section';
+                        
+                        const sectionHeader = document.createElement('div');
+                        sectionHeader.className = 'section-header';
+                        
+                        const sectionTitle = document.createElement('h3');
+                        sectionTitle.className = 'section-title';
+                        sectionTitle.textContent = cls["rdfs:label"] || cls["@id"].split(':')[1];
+                        sectionHeader.appendChild(sectionTitle);
+
+                        // Add section description if available
+                        if (cls["rdfs:comment"]) {
+                            const sectionDescription = document.createElement('div');
+                            sectionDescription.className = 'section-description';
+                            sectionDescription.textContent = cls["rdfs:comment"];
+                            sectionHeader.appendChild(sectionDescription);
                         }
 
-                        // Create appropriate input based on type
-                        let input;
-                        if (prop.type === 'boolean') {
-                            input = document.createElement('input');
-                            input.type = 'checkbox';
-                            input.id = propName;
-                            input.checked = prop.default || false;
-                        } else if (prop.enum) {
-                            input = document.createElement('select');
-                            input.id = propName;
-                            prop.enum.forEach(option => {
-                                const optionElement = document.createElement('option');
-                                optionElement.value = option;
-                                optionElement.textContent = option;
-                                input.appendChild(optionElement);
-                            });
-                        } else if (prop.type === 'number') {
-                            input = document.createElement('input');
-                            input.type = 'number';
-                            input.id = propName;
-                            input.step = '0.1';
-                            if (prop.minimum !== undefined) input.min = prop.minimum;
-                            if (prop.maximum !== undefined) input.max = prop.maximum;
-                            input.value = prop.default || '';
-                        } else {
-                            input = document.createElement('input');
-                            input.type = 'text';
-                            input.id = propName;
-                            input.value = prop.default || '';
-                        }
+                        section.appendChild(sectionHeader);
 
-                        // Add event listener
-                        input.addEventListener('change', (e) => {
-                            const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-                            updateInstructions(`${className}:${propName}`, value);
+                        // Add properties for this class
+                        const classProperties = propertiesByDomain[cls["@id"]] || [];
+                        console.log('Properties for class', cls["@id"], ':', classProperties);
+                        
+                        classProperties.forEach(prop => {
+                            console.log('Processing property:', prop);
+                            const formGroup = createFormField(prop);
+                            section.appendChild(formGroup);
                         });
 
-                        formGroup.appendChild(input);
-                        section.appendChild(formGroup);
-                    }
+                        formContainer.appendChild(section);
+                    });
 
-                    formContainer.appendChild(section);
+                    // Initialize instructions object
+                    instructions = {};
+                    properties.forEach(prop => {
+                        if (prop["schema:defaultValue"] !== undefined) {
+                            instructions[prop["@id"]] = prop["schema:defaultValue"];
+                        }
+                    });
+
+                    // Update instructions display
+                    updateInstructionsDisplay();
+
+                } catch (error) {
+                    console.error('Error loading form:', error);
+                    document.getElementById('form-container').innerHTML = `<p class="error">Error loading form: ${error.message}</p>`;
                 }
+            }
 
-                // Initialize instructions object
-                instructions = {};
-                for (const [key, value] of Object.entries(data.properties)) {
-                    if (value.default !== undefined) {
-                        instructions[key] = value.default;
-                    }
-                }
+            // Update instructions display
+            function updateInstructionsDisplay() {
+                const formattedInstructions = JSON.stringify(instructions, null, 4);
+                const pre = document.createElement('pre');
+                pre.textContent = formattedInstructions;
+                
+                const instructionsContainer = document.getElementById('instructions');
+                const validationResult = document.getElementById('validation-result');
+                const copyButton = document.getElementById('copy-button');
+                
+                instructionsContainer.innerHTML = '';
+                instructionsContainer.appendChild(pre);
+                instructionsContainer.appendChild(validationResult);
+                instructionsContainer.appendChild(copyButton);
+                
+                validateInstructions(instructions);
+            }
 
-                // Update instructions display
+            // Update instructions
+            function updateInstructions(parameter, value) {
+                instructions[parameter] = value;
                 updateInstructionsDisplay();
-
-            } catch (error) {
-                console.error('Error loading form:', error);
-                document.getElementById('form-container').innerHTML = `<p class="error">Error loading form: ${error.message}</p>`;
             }
-        }
 
-        // Update instructions display
-        function updateInstructionsDisplay() {
-            const formattedInstructions = JSON.stringify(instructions, null, 4);
-            const pre = document.createElement('pre');
-            pre.textContent = formattedInstructions;
-            
-            const instructionsContainer = document.getElementById('instructions');
-            instructionsContainer.innerHTML = '';
-            instructionsContainer.appendChild(pre);
-            instructionsContainer.appendChild(document.getElementById('validation-result'));
-            instructionsContainer.appendChild(document.getElementById('copy-button'));
-            
-            validateInstructions(instructions);
-        }
-
-        // Update instructions
-        function updateInstructions(parameter, value) {
-            instructions[parameter] = value;
-            updateInstructionsDisplay();
-        }
-
-        // Validate instructions
-        function validateInstructions(data) {
-            const validationResult = document.getElementById('validation-result');
-            if (validate(data)) {
-                validationResult.innerHTML = '<div class="validation-success">✅ Instructions are valid</div>';
-            } else {
-                const errors = validate.errors.map(error => 
-                    `<div class="validation-error">❌ ${error.instancePath} ${error.message}</div>`
-                ).join('');
-                validationResult.innerHTML = `<div class="validation-error">${errors}</div>`;
+            // Validate instructions
+            function validateInstructions(data) {
+                const validationResult = document.getElementById('validation-result');
+                if (validate(data)) {
+                    validationResult.innerHTML = '<div class="validation-success">✅ Instructions are valid</div>';
+                } else {
+                    const errors = validate.errors.map(error => 
+                        `<div class="validation-error">❌ ${error.instancePath} ${error.message}</div>`
+                    ).join('');
+                    validationResult.innerHTML = `<div class="validation-error">${errors}</div>`;
+                }
             }
-        }
 
-        // Copy to clipboard functionality
-        document.getElementById('copy-button').addEventListener('click', function() {
-            const instructionsText = document.querySelector('#instructions pre').textContent;
-            navigator.clipboard.writeText(instructionsText).then(() => {
-                this.textContent = 'Copied!';
-                setTimeout(() => {
-                    this.textContent = 'Copy to Clipboard';
-                }, 2000);
+            // Copy to clipboard functionality
+            document.getElementById('copy-button').addEventListener('click', function() {
+                const instructionsText = document.querySelector('#instructions pre').textContent;
+                navigator.clipboard.writeText(instructionsText).then(() => {
+                    this.textContent = 'Copied!';
+                    setTimeout(() => {
+                        this.textContent = 'Copy to Clipboard';
+                    }, 2000);
+                });
+            });
+
+            // Add cognitive level handling
+            document.getElementById('cognitive-level').addEventListener('change', function() {
+                const value = this.value;
+                if (value) {
+                    updateInstructions('llmInstructions:cognitiveLevel', value);
+                }
+            });
+
+            // Initialize
+            initializeValidator().then(() => {
+                loadForm();
             });
         });
 
-        // Add cognitive level handling
-        document.getElementById('cognitive-level').addEventListener('change', function() {
-            const value = this.value;
-            if (value) {
-                updateInstructions('llmInstructions:cognitiveLevel', value);
-            }
-        });
+        // Function to create a slider with marks
+        function createSlider(property, min, max, step, marks) {
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
 
-        // Initialize
-        initializeValidator().then(() => {
-            loadForm();
-        });
+            const label = document.createElement('label');
+            label.htmlFor = property["@id"];
+            label.textContent = property["rdfs:label"] || property["@id"].split(':')[1];
+            formGroup.appendChild(label);
+
+            if (property["rdfs:comment"]) {
+                const helpText = document.createElement('div');
+                helpText.className = 'help-text';
+                helpText.textContent = property["rdfs:comment"];
+                formGroup.appendChild(helpText);
+            }
+
+            const sliderContainer = document.createElement('div');
+            sliderContainer.className = 'slider-container';
+
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.id = property["@id"];
+            slider.min = min;
+            slider.max = max;
+            slider.step = step;
+            slider.value = property["schema:defaultValue"] || min;
+
+            const valueDisplay = document.createElement('div');
+            valueDisplay.className = 'slider-value';
+            valueDisplay.textContent = slider.value;
+            sliderContainer.appendChild(valueDisplay);
+
+            const marksContainer = document.createElement('div');
+            marksContainer.className = 'slider-marks';
+            marks.forEach(mark => {
+                const markElement = document.createElement('div');
+                markElement.className = 'slider-mark';
+                markElement.setAttribute('data-value', mark);
+                marksContainer.appendChild(markElement);
+            });
+            sliderContainer.appendChild(marksContainer);
+
+            const labelsContainer = document.createElement('div');
+            labelsContainer.className = 'slider-labels';
+            const minLabel = document.createElement('span');
+            minLabel.textContent = min;
+            const maxLabel = document.createElement('span');
+            maxLabel.textContent = max;
+            labelsContainer.appendChild(minLabel);
+            labelsContainer.appendChild(maxLabel);
+            sliderContainer.appendChild(labelsContainer);
+
+            sliderContainer.appendChild(slider);
+            formGroup.appendChild(sliderContainer);
+
+            // Update value display on input
+            slider.addEventListener('input', (e) => {
+                valueDisplay.textContent = e.target.value;
+                valueDisplay.style.left = `${((e.target.value - min) / (max - min)) * 100}%`;
+                updateInstructions(property["@id"], parseFloat(e.target.value));
+            });
+
+            return formGroup;
+        }
+
+        // Modify the form building code to use sliders for appropriate properties
+        function createFormField(property) {
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
+
+            const label = document.createElement('label');
+            label.htmlFor = property["@id"];
+            label.textContent = property["rdfs:label"] || property["@id"].split(':')[1];
+            formGroup.appendChild(label);
+
+            // Add help text if available
+            if (property["rdfs:comment"]) {
+                const helpText = document.createElement('div');
+                helpText.className = 'help-text';
+                helpText.textContent = property["rdfs:comment"];
+                formGroup.appendChild(helpText);
+            }
+
+            // Create appropriate input based on type
+            let input;
+            const rangeType = property["rdfs:range"]?.["@id"] || "schema:Text";
+            
+            if (rangeType === "schema:Number" || rangeType === "schema:Integer") {
+                // Check if this property should use a slider
+                if (property["@id"].includes("temperature") || 
+                    property["@id"].includes("top_P") || 
+                    property["@id"].includes("top_K") ||
+                    property["@id"].includes("repetitionPenalty") ||
+                    property["@id"].includes("diversityPenalty")) {
+                    
+                    const min = property["schema:minValue"] || 0;
+                    const max = property["schema:maxValue"] || 1;
+                    const step = rangeType === "schema:Number" ? 0.1 : 1;
+                    const marks = [min, (min + max) / 2, max];
+                    
+                    return createSlider(property, min, max, step, marks);
+                }
+                
+                input = document.createElement('input');
+                input.type = 'number';
+                input.id = property["@id"];
+                input.step = rangeType === "schema:Number" ? "0.1" : "1";
+                if (property["schema:minValue"] !== undefined) input.min = property["schema:minValue"];
+                if (property["schema:maxValue"] !== undefined) input.max = property["schema:maxValue"];
+                input.value = property["schema:defaultValue"] || "";
+            } else if (rangeType === "schema:Boolean") {
+                input = document.createElement('input');
+                input.type = 'checkbox';
+                input.id = property["@id"];
+                input.checked = property["schema:defaultValue"] || false;
+            } else {
+                input = document.createElement('select');
+                input.id = property["@id"];
+                const options = property["schema:validValues"] || ["Option 1", "Option 2"];
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.textContent = option;
+                    input.appendChild(opt);
+                });
+            }
+
+            // Add event listener
+            input.addEventListener('change', (e) => {
+                const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                updateInstructions(property["@id"], value);
+            });
+
+            formGroup.appendChild(input);
+            return formGroup;
+        }
     </script>
 </body>
 </html>
