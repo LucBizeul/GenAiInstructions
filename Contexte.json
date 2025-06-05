@@ -1,0 +1,19 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "llmInstructions": "http://example.org/llmInstructions#",
+    "label": "rdfs:label",
+    "comment": "rdfs:comment",
+    "range": "rdfs:range",
+    "domain": "rdfs:domain",
+    "Class": "rdfs:Class",
+    "Property": "rdf:Property",
+    "minValue": "schema:minValue",
+    "maxValue": "schema:maxValue",
+    "validValues": "schema:validValues",
+    "isMultipleSelectionAllowed": "schema:isMultipleSelectionAllowed"
+  }
+}
