@@ -4,54 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LLM Instruction Builder</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.12.0/ajv.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
             background-color: #f9f9f9;
             color: #333;
+            line-height: 1.6;
         }
         h1, h2 {
-            margin-bottom: 10px;
-        }
-        h1 {
-            font-size: 28px;
+            margin-bottom: 20px;
             color: #2c3e50;
         }
+        h1 {
+            font-size: 32px;
+            text-align: center;
+            margin-top: 30px;
+        }
         h2 {
-            font-size: 22px;
+            font-size: 24px;
             color: #34495e;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
         }
         .form-container {
-            margin-bottom: 20px;
+            max-width: 800px;
+            margin: 0 auto 30px;
             background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .form-group {
+            margin-bottom: 20px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: bold;
+            color: #2c3e50;
+        }
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
         }
         select, input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        select:focus, input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52,152,219,0.3);
         }
         .instructions-container {
-            background: #f4f4f4;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        pre {
+            background: #f8f9fa;
             padding: 15px;
-            border-radius: 5px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .error {
+            color: #e74c3c;
+            padding: 10px;
+            background: #fde8e8;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #27ae60;
+            padding: 10px;
+            background: #e8f8e8;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .validation-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .validation-success {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .copy-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .copy-button:hover {
+            background: #2980b9;
+        }
+        .copy-button:active {
+            background: #2472a4;
+        }
+        .cognitive-level-section {
+            background: #f0f7ff;
+            border: 1px solid #b3d4ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .cognitive-level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .cognitive-level-card {
+            background: white;
             border: 1px solid #ddd;
-            font-family: monospace;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .cognitive-level-card h4 {
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        .cognitive-level-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .cognitive-level-card .example {
+            font-style: italic;
+            color: #3498db;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>LLM Instruction Builder</h1>
+    
+    <div class="cognitive-level-section">
+        <h2>Cognitive Level</h2>
+        <p>Select the cognitive level required for your instruction, based on Bloom's taxonomy:</p>
+        
+        <div class="cognitive-level-grid">
+            <div class="cognitive-level-card">
+                <h4>Remember</h4>
+                <p>Recall of information</p>
+                <p class="example">Example: "List Newton's 3 laws"</p>
+            </div>
+            <div class="cognitive-level-card">
+                <h4>Understand</h4>
+                <p>Reformulation and explanation</p>
+                <p class="example">Example: "Explain the Product-Market Fit principle"</p>
+            </div>
+            <div class="cognitive-level-card">
+                <h4>Apply</h4>
+                <p>Direct implementation</p>
+                <p class="example">Example: "Use this method to solve this customer case"</p>
+            </div>
+            <div class="cognitive-level-card">
+                <h4>Analyze</h4>
+                <p>Decomposition and structure</p>
+                <p class="example">Example: "Compare these two pricing strategies"</p>
+            </div>
+            <div class="cognitive-level-card">
+                <h4>Evaluate</h4>
+                <p>Critical judgment</p>
+                <p class="example">Example: "What is the weakness of this approach?"</p>
+            </div>
+            <div class="cognitive-level-card">
+                <h4>Create</h4>
+                <p>Original creation</p>
+                <p class="example">Example: "Propose a new onboarding model"</p>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 20px;">
+            <label for="cognitive-level">Select Cognitive Level:</label>
+            <select id="cognitive-level" class="cognitive-level-select">
+                <option value="">Select a level...</option>
+                <option value="remember">Remember</option>
+                <option value="understand">Understand</option>
+                <option value="apply">Apply</option>
+                <option value="analyze">Analyze</option>
+                <option value="evaluate">Evaluate</option>
+                <option value="create">Create</option>
+            </select>
+        </div>
+    </div>
+
     <div class="form-container" id="form-container">
         <p>Loading parameters...</p>
     </div>
@@ -59,75 +231,197 @@
     <h2>Generated Instructions</h2>
     <div class="instructions-container" id="instructions">
         <p>Your instructions will appear here.</p>
+        <div id="validation-result"></div>
+        <button class="copy-button" id="copy-button">Copy to Clipboard</button>
     </div>
 
     <script>
-        const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstruction/main/IIMInstructions.json";
+        const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/LLMInstructions.json";
+        const schemaURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/schema.json";
+        let ajv = new Ajv({ allErrors: true });
+        let validate;
+        let instructions = {};
 
-        // Fetch JSON data and build the form dynamically
-        async function fetchAndBuildForm() {
-            const formContainer = document.getElementById('form-container');
-            const instructionsContainer = document.getElementById('instructions');
-            const instructions = {};
-
+        // Fetch JSON Schema and initialize validator
+        async function initializeValidator() {
             try {
-                const response = await fetch(jsonURL);
-                if (!response.ok) throw new Error(`Error fetching JSON: ${response.statusText}`);
-                const jsonData = await response.json();
-
-                // Extract parameters (properties)
-                const properties = jsonData["@graph"].filter(item => item["@type"] === "rdf:Property");
-
-                // Build the form dynamically
-                formContainer.innerHTML = '';
-                properties.forEach(prop => {
-                    const label = document.createElement('label');
-                    label.textContent = prop["rdfs:label"] || prop["@id"];
-                    formContainer.appendChild(label);
-
-                    const rangeType = prop["rdfs:range"]?.["@id"] || "schema:Text";
-                    if (rangeType === "schema:Number") {
-                        // Create a number input
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.min = prop["schema:minValue"] || 0;
-                        input.max = prop["schema:maxValue"] || 100;
-                        input.value = (input.min + input.max) / 2; // Default to midpoint
-                        input.addEventListener('input', () => updateInstructions(prop["@id"], input.value));
-                        formContainer.appendChild(input);
-                    } else if (rangeType === "schema:Boolean") {
-                        // Create a checkbox for boolean values
-                        const input = document.createElement('input');
-                        input.type = 'checkbox';
-                        input.addEventListener('change', () => updateInstructions(prop["@id"], input.checked));
-                        formContainer.appendChild(input);
-                    } else if (rangeType === "schema:Text") {
-                        // Create a dropdown for text values
-                        const select = document.createElement('select');
-                        const options = prop["schema:validValues"] || ["Option 1", "Option 2"];
-                        options.forEach(option => {
-                            const opt = document.createElement('option');
-                            opt.value = option;
-                            opt.textContent = option;
-                            select.appendChild(opt);
-                        });
-                        select.addEventListener('change', () => updateInstructions(prop["@id"], select.value));
-                        formContainer.appendChild(select);
-                    }
-                });
-
-                // Update the instructions dynamically
-                function updateInstructions(parameter, value) {
-                    instructions[parameter] = value;
-                    instructionsContainer.textContent = JSON.stringify(instructions, null, 4);
-                }
+                const response = await fetch(schemaURL);
+                if (!response.ok) throw new Error(`Error fetching schema: ${response.statusText}`);
+                const schema = await response.json();
+                validate = ajv.compile(schema);
             } catch (error) {
-                formContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
+                console.error('Error initializing validator:', error);
             }
         }
 
-        // Load form and parameters on page load
-        fetchAndBuildForm();
+        // Fetch JSON data and build form
+        async function loadForm() {
+            try {
+                const response = await fetch(jsonURL);
+                if (!response.ok) throw new Error(`Error fetching JSON: ${response.statusText}`);
+                const data = await response.json();
+                
+                const formContainer = document.getElementById('form-container');
+                formContainer.innerHTML = ''; // Clear loading message
+
+                // Group properties by class
+                const classes = {};
+                for (const [key, value] of Object.entries(data.properties)) {
+                    if (key.includes(':')) {
+                        const [className, propName] = key.split(':');
+                        if (!classes[className]) {
+                            classes[className] = {};
+                        }
+                        classes[className][propName] = value;
+                    }
+                }
+
+                // Create sections for each class
+                for (const [className, properties] of Object.entries(classes)) {
+                    const section = document.createElement('div');
+                    section.className = 'section';
+                    
+                    const sectionTitle = document.createElement('h3');
+                    sectionTitle.className = 'section-title';
+                    sectionTitle.textContent = className.replace('llmInstructions:', '');
+                    section.appendChild(sectionTitle);
+
+                    // Add properties for this class
+                    for (const [propName, prop] of Object.entries(properties)) {
+                        const formGroup = document.createElement('div');
+                        formGroup.className = 'form-group';
+
+                        const label = document.createElement('label');
+                        label.htmlFor = propName;
+                        label.textContent = propName;
+                        formGroup.appendChild(label);
+
+                        // Add help text if available
+                        if (prop.description) {
+                            const helpText = document.createElement('div');
+                            helpText.className = 'help-text';
+                            helpText.textContent = prop.description;
+                            formGroup.appendChild(helpText);
+                        }
+
+                        // Create appropriate input based on type
+                        let input;
+                        if (prop.type === 'boolean') {
+                            input = document.createElement('input');
+                            input.type = 'checkbox';
+                            input.id = propName;
+                            input.checked = prop.default || false;
+                        } else if (prop.enum) {
+                            input = document.createElement('select');
+                            input.id = propName;
+                            prop.enum.forEach(option => {
+                                const optionElement = document.createElement('option');
+                                optionElement.value = option;
+                                optionElement.textContent = option;
+                                input.appendChild(optionElement);
+                            });
+                        } else if (prop.type === 'number') {
+                            input = document.createElement('input');
+                            input.type = 'number';
+                            input.id = propName;
+                            input.step = '0.1';
+                            if (prop.minimum !== undefined) input.min = prop.minimum;
+                            if (prop.maximum !== undefined) input.max = prop.maximum;
+                            input.value = prop.default || '';
+                        } else {
+                            input = document.createElement('input');
+                            input.type = 'text';
+                            input.id = propName;
+                            input.value = prop.default || '';
+                        }
+
+                        // Add event listener
+                        input.addEventListener('change', (e) => {
+                            const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                            updateInstructions(`${className}:${propName}`, value);
+                        });
+
+                        formGroup.appendChild(input);
+                        section.appendChild(formGroup);
+                    }
+
+                    formContainer.appendChild(section);
+                }
+
+                // Initialize instructions object
+                instructions = {};
+                for (const [key, value] of Object.entries(data.properties)) {
+                    if (value.default !== undefined) {
+                        instructions[key] = value.default;
+                    }
+                }
+
+                // Update instructions display
+                updateInstructionsDisplay();
+
+            } catch (error) {
+                console.error('Error loading form:', error);
+                document.getElementById('form-container').innerHTML = `<p class="error">Error loading form: ${error.message}</p>`;
+            }
+        }
+
+        // Update instructions display
+        function updateInstructionsDisplay() {
+            const formattedInstructions = JSON.stringify(instructions, null, 4);
+            const pre = document.createElement('pre');
+            pre.textContent = formattedInstructions;
+            
+            const instructionsContainer = document.getElementById('instructions');
+            instructionsContainer.innerHTML = '';
+            instructionsContainer.appendChild(pre);
+            instructionsContainer.appendChild(document.getElementById('validation-result'));
+            instructionsContainer.appendChild(document.getElementById('copy-button'));
+            
+            validateInstructions(instructions);
+        }
+
+        // Update instructions
+        function updateInstructions(parameter, value) {
+            instructions[parameter] = value;
+            updateInstructionsDisplay();
+        }
+
+        // Validate instructions
+        function validateInstructions(data) {
+            const validationResult = document.getElementById('validation-result');
+            if (validate(data)) {
+                validationResult.innerHTML = '<div class="validation-success">✅ Instructions are valid</div>';
+            } else {
+                const errors = validate.errors.map(error => 
+                    `<div class="validation-error">❌ ${error.instancePath} ${error.message}</div>`
+                ).join('');
+                validationResult.innerHTML = `<div class="validation-error">${errors}</div>`;
+            }
+        }
+
+        // Copy to clipboard functionality
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const instructionsText = document.querySelector('#instructions pre').textContent;
+            navigator.clipboard.writeText(instructionsText).then(() => {
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = 'Copy to Clipboard';
+                }, 2000);
+            });
+        });
+
+        // Add cognitive level handling
+        document.getElementById('cognitive-level').addEventListener('change', function() {
+            const value = this.value;
+            if (value) {
+                updateInstructions('llmInstructions:cognitiveLevel', value);
+            }
+        });
+
+        // Initialize
+        initializeValidator().then(() => {
+            loadForm();
+        });
     </script>
 </body>
 </html>

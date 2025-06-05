@@ -162,7 +162,7 @@
     {
       "@id": "llmInstructions:confidenceScore",
       "@type": "rdf:Property",
-      "rdfs:label": "Score de Confidence",
+      "rdfs:label": "Confidence Score",
       "rdfs:comment": "Indicates whether a confidence score should be generated with the response. True means a confidence score should be generated, false means it should not.",
       "rdfs:domain": {
         "@id": "llmInstructions:OutputControl"
