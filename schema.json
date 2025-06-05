@@ -4,7 +4,7 @@
   "description": "Schema for validating LLM instruction parameters",
   "type": "object",
   "properties": {
-    "llmInstructions:cognitiveLevel": {
+    "genAiInstructions:cognitiveLevel": {
       "type": "string",
       "enum": ["remember", "understand", "apply", "analyze", "evaluate", "create"],
       "description": "Cognitive level required to accomplish the instruction, based on Bloom's taxonomy",
@@ -41,148 +41,148 @@
         }
       ]
     },
-    "llmInstructions:temperature": {
+    "genAiInstructions:temperature": {
       "type": "number",
       "minimum": 0,
       "maximum": 1,
       "description": "Controls the creativity of the model"
     },
-    "llmInstructions:top_K": {
+    "genAiInstructions:top_K": {
       "type": "number",
       "minimum": 1,
       "maximum": 200,
       "description": "Limits generation to the top K most probable words"
     },
-    "llmInstructions:top_P": {
+    "genAiInstructions:top_P": {
       "type": "number",
       "minimum": 0,
       "maximum": 1,
       "description": "Defines the cumulative probability threshold for word selection"
     },
-    "llmInstructions:repetitionPenalty": {
+    "genAiInstructions:repetitionPenalty": {
       "type": "number",
       "minimum": 0.1,
       "maximum": 2,
       "description": "Penalizes repeated words"
     },
-    "llmInstructions:diversityPenalty": {
+    "genAiInstructions:diversityPenalty": {
       "type": "number",
       "minimum": 0,
       "maximum": 1,
       "description": "Encourages global diversity in text generation"
     },
-    "llmInstructions:lengthBias": {
+    "genAiInstructions:lengthBias": {
       "type": "number",
       "minimum": -10,
       "maximum": 10,
       "description": "Influences the length of the generated text"
     },
-    "llmInstructions:contextLengthBias": {
+    "genAiInstructions:contextLengthBias": {
       "type": "number",
       "minimum": -10,
       "maximum": 10,
       "description": "Adjusts the preference for shorter or longer contexts"
     },
-    "llmInstructions:maxLength": {
+    "genAiInstructions:maxLength": {
       "type": "integer",
       "minimum": 1,
       "maximum": 4096,
       "description": "Defines the maximum number of tokens to generate"
     },
-    "llmInstructions:includeMetadata": {
+    "genAiInstructions:includeMetadata": {
       "type": "boolean",
       "description": "Indicates whether the output should include metadata"
     },
-    "llmInstructions:confidenceScore": {
+    "genAiInstructions:confidenceScore": {
       "type": "boolean",
       "description": "Indicates whether a confidence score should be generated"
     },
-    "llmInstructions:responseLength": {
+    "genAiInstructions:responseLength": {
       "type": "integer",
       "minimum": 1,
       "maximum": 100,
       "description": "Defines a range for the length of the responses in tokens"
     },
-    "llmInstructions:numberOfOutputs": {
+    "genAiInstructions:numberOfOutputs": {
       "type": "integer",
       "minimum": 1,
       "maximum": 1000,
       "description": "Generates multiple alternative versions of a response"
     },
-    "llmInstructions:toxicityFilter": {
+    "genAiInstructions:toxicityFilter": {
       "type": "number",
       "minimum": 0,
       "maximum": 1,
       "description": "Filters potentially offensive or harmful content"
     },
-    "llmInstructions:offensivenessFilter": {
+    "genAiInstructions:offensivenessFilter": {
       "type": "number",
       "minimum": 0,
       "maximum": 1,
       "description": "Filters content that is violent or offensive"
     },
-    "llmInstructions:hallucinationDetection": {
+    "genAiInstructions:hallucinationDetection": {
       "type": "boolean",
       "description": "Detects and mitigates factually incorrect outputs"
     },
-    "llmInstructions:profanityFilter": {
+    "genAiInstructions:profanityFilter": {
       "type": "number",
       "minimum": 0,
       "maximum": 1,
       "description": "Filters vulgar or inappropriate words"
     },
-    "llmInstructions:sensitiveContentFilter": {
+    "genAiInstructions:sensitiveContentFilter": {
       "type": "number",
       "minimum": 0,
       "maximum": 1,
       "description": "Filters sensitive topics such as politics or religion"
     },
-    "llmInstructions:biasMitigation": {
+    "genAiInstructions:biasMitigation": {
       "type": "string",
       "enum": ["none", "low", "medium", "high"],
       "description": "Reduces biases in responses"
     },
-    "llmInstructions:responseTimeLimit": {
+    "genAiInstructions:responseTimeLimit": {
       "type": "number",
       "minimum": 0,
       "description": "Sets a time limit for generating a response"
     },
-    "llmInstructions:energyEfficiencyMode": {
+    "genAiInstructions:energyEfficiencyMode": {
       "type": "string",
       "enum": ["low", "medium", "high"],
       "description": "Optimizes resource usage by adjusting energy efficiency"
     },
-    "llmInstructions:processingMode": {
+    "genAiInstructions:processingMode": {
       "type": "string",
       "enum": ["fast", "balanced", "highQuality"],
       "description": "Selects between speed or quality optimization"
     },
-    "llmInstructions:computeBudget": {
+    "genAiInstructions:computeBudget": {
       "type": "number",
       "minimum": 0,
       "description": "Defines a limit on the resources used for response generation"
     },
-    "llmInstructions:enableAttentionAnalysis": {
+    "genAiInstructions:enableAttentionAnalysis": {
       "type": "boolean",
       "description": "Highlights specific parts of the input text that the model focused on"
     },
-    "llmInstructions:displayNeuronActivations": {
+    "genAiInstructions:displayNeuronActivations": {
       "type": "boolean",
       "description": "Provides insights into the internal workings of the model"
     },
-    "llmInstructions:provideJustifications": {
+    "genAiInstructions:provideJustifications": {
       "type": "boolean",
       "description": "Accompanies each response with a justification"
     },
-    "llmInstructions:useExamplesAndCounterExamples": {
+    "genAiInstructions:useExamplesAndCounterExamples": {
       "type": "boolean",
       "description": "Uses examples and counterexamples to illustrate responses"
     },
-    "llmInstructions:explainStepByStep": {
+    "genAiInstructions:explainStepByStep": {
       "type": "boolean",
       "description": "Requests the model to detail its reasoning step by step"
     },
-    "llmInstructions:activateExplanationMode": {
+    "genAiInstructions:activateExplanationMode": {
       "type": "boolean",
       "description": "Activates all available explainability options"
     }

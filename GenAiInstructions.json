@@ -3,7 +3,7 @@
     "schema": "http://schema.org/",
     "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "llmInstructions": "https://github.com/LucBizeul/Schemas-LLMInstructions/"
+    "genAiInstructions": "https://github.com/LucBizeul/Schemas-LLMInstructions/"
   },
   "@graph": [
     {
@@ -20,7 +20,7 @@
       "schema:version": "0.1 beta"
     },
     {
-      "@id": "llmInstructions:CreativityControl",
+      "@id": "genAiInstructions:CreativityControl",
       "@type": "rdfs:Class",
       "rdfs:subClassOf": {
         "@id": "schema:Thing"
@@ -29,12 +29,12 @@
       "rdfs:comment": "Parameters that influence the creativity and diversity of text generation."
     },
     {
-      "@id": "llmInstructions:temperature",
+      "@id": "genAiInstructions:temperature",
       "@type": "rdf:Property",
       "rdfs:label": "Temperature",
       "rdfs:comment": "Controls the creativity of the model. Min = 0 (deterministic outputs, low creativity), Max = 1 (highly creative and diverse outputs).",
       "rdfs:domain": {
-        "@id": "llmInstructions:CreativityControl"
+        "@id": "genAiInstructions:CreativityControl"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -43,12 +43,12 @@
       "schema:maxValue": 1
     },
     {
-      "@id": "llmInstructions:top_K",
+      "@id": "genAiInstructions:top_K",
       "@type": "rdf:Property",
       "rdfs:label": "Top-K Sampling",
       "rdfs:comment": "Limits generation to the top K most probable words. Min = 1 (only the most likely word), Max = 200 (wider range of words considered).",
       "rdfs:domain": {
-        "@id": "llmInstructions:CreativityControl"
+        "@id": "genAiInstructions:CreativityControl"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -57,12 +57,12 @@
       "schema:maxValue": 200
     },
     {
-      "@id": "llmInstructions:top_P",
+      "@id": "genAiInstructions:top_P",
       "@type": "rdf:Property",
       "rdfs:label": "Nucleus Sampling (Top-P)",
       "rdfs:comment": "Defines the cumulative probability threshold for word selection. Min = 0 (all words considered), Max = 1 (only the most likely word considered).",
       "rdfs:domain": {
-        "@id": "llmInstructions:CreativityControl"
+        "@id": "genAiInstructions:CreativityControl"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -71,12 +71,12 @@
       "schema:maxValue": 1
     },
     {
-      "@id": "llmInstructions:repetitionPenalty",
+      "@id": "genAiInstructions:repetitionPenalty",
       "@type": "rdf:Property",
       "rdfs:label": "Repetition Penalty",
       "rdfs:comment": "Penalizes repeated words. Min = 0.1 (encourages repetition), Max = 2 (discourages repetition strongly).",
       "rdfs:domain": {
-        "@id": "llmInstructions:CreativityControl"
+        "@id": "genAiInstructions:CreativityControl"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -85,12 +85,12 @@
       "schema:maxValue": 2
     },
     {
-      "@id": "llmInstructions:diversityPenalty",
+      "@id": "genAiInstructions:diversityPenalty",
       "@type": "rdf:Property",
       "rdfs:label": "Diversity Penalty",
       "rdfs:comment": "Encourages global diversity in text generation. Min = 0 (no diversity), Max = 1 (maximum diversity).",
       "rdfs:domain": {
-        "@id": "llmInstructions:CreativityControl"
+        "@id": "genAiInstructions:CreativityControl"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -99,12 +99,12 @@
       "schema:maxValue": 1
     },
     {
-      "@id": "llmInstructions:lengthBias",
+      "@id": "genAiInstructions:lengthBias",
       "@type": "rdf:Property",
       "rdfs:label": "Length Bias",
       "rdfs:comment": "Influences the length of the generated text. Min = -10 (preference for short outputs), Max = 10 (preference for long outputs).",
       "rdfs:domain": {
-        "@id": "llmInstructions:CreativityControl"
+        "@id": "genAiInstructions:CreativityControl"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -113,12 +113,12 @@
       "schema:maxValue": 10
     },
     {
-      "@id": "llmInstructions:contextLengthBias",
+      "@id": "genAiInstructions:contextLengthBias",
       "@type": "rdf:Property",
       "rdfs:label": "Context Length Bias",
       "rdfs:comment": "Adjusts the preference for shorter or longer contexts. Min = -10 (favor short contexts), Max = 10 (favor long contexts).",
       "rdfs:domain": {
-        "@id": "llmInstructions:CreativityControl"
+        "@id": "genAiInstructions:CreativityControl"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -127,7 +127,7 @@
       "schema:maxValue": 10
     },
     {
-      "@id": "llmInstructions:OutputControl",
+      "@id": "genAiInstructions:OutputControl",
       "@type": "rdfs:Class",
       "rdfs:subClassOf": {
         "@id": "schema:Thing"
@@ -136,12 +136,12 @@
       "rdfs:comment": "Parameters that define the structure and format of the outputs."
     },
     {
-      "@id": "llmInstructions:maxLength",
+      "@id": "genAiInstructions:maxLength",
       "@type": "rdf:Property",
       "rdfs:label": "Maximum Length",
       "rdfs:comment": "Defines the maximum number of tokens to generate. Min = 1 (at least one token), Max = 4096 (or the model's limit).",
       "rdfs:domain": {
-        "@id": "llmInstructions:OutputControl"
+        "@id": "genAiInstructions:OutputControl"
       },
       "rdfs:range": {
         "@id": "schema:Integer"
@@ -150,36 +150,36 @@
       "schema:maxValue": 4096
     },
     {
-      "@id": "llmInstructions:includeMetadata",
+      "@id": "genAiInstructions:includeMetadata",
       "@type": "rdf:Property",
       "rdfs:label": "Include Metadata",
       "rdfs:comment": "Indicates whether the output should include metadata such as confidence scores or sources. Type: Boolean (true = include, false = do not include).",
       "rdfs:domain": {
-        "@id": "llmInstructions:OutputControl"
+        "@id": "genAiInstructions:OutputControl"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
       }
     },
     {
-      "@id": "llmInstructions:confidenceScore",
+      "@id": "genAiInstructions:confidenceScore",
       "@type": "rdf:Property",
       "rdfs:label": "Confidence Score",
       "rdfs:comment": "Indicates whether a confidence score should be generated with the response. True means a confidence score should be generated, false means it should not.",
       "rdfs:domain": {
-        "@id": "llmInstructions:OutputControl"
+        "@id": "genAiInstructions:OutputControl"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
       }
     },
     {
-      "@id": "llmInstructions:responseLength",
+      "@id": "genAiInstructions:responseLength",
       "@type": "rdf:Property",
       "rdfs:label": "Response Length",
       "rdfs:comment": "Defines a range for the length of the responses in tokens. Includes properties for minimum and maximum length.",
       "rdfs:domain": {
-        "@id": "llmInstructions:OutputControl"
+        "@id": "genAiInstructions:OutputControl"
       },
       "rdfs:range": {
         "@id": "schema:Integer"
@@ -188,12 +188,12 @@
       "schema:maxValue": 100
     },
     {
-      "@id": "llmInstructions:numberOfOutputs",
+      "@id": "genAiInstructions:numberOfOutputs",
       "@type": "rdf:Property",
       "rdfs:label": "Number of Outputs",
       "rdfs:comment": "Generates multiple alternative versions of a response. Min = 1 (at least one version), Max = Indefinite.",
       "rdfs:domain": {
-        "@id": "llmInstructions:OutputControl"
+        "@id": "genAiInstructions:OutputControl"
       },
       "rdfs:range": {
         "@id": "schema:Integer"
@@ -202,7 +202,7 @@
       "schema:maxValue": 1000
     },
     {
-      "@id": "llmInstructions:SafetyAndFilters",
+      "@id": "genAiInstructions:SafetyAndFilters",
       "@type": "rdfs:Class",
       "rdfs:subClassOf": {
         "@id": "schema:Thing"
@@ -211,12 +211,12 @@
       "rdfs:comment": "Parameters related to safety and compliance in text generation."
     },
     {
-      "@id": "llmInstructions:toxicityFilter",
+      "@id": "genAiInstructions:toxicityFilter",
       "@type": "rdf:Property",
       "rdfs:label": "Toxicity Filter",
       "rdfs:comment": "Filters potentially offensive or harmful content. Min = 0 (no filtering), Max = 1 (strict filtering).",
       "rdfs:domain": {
-        "@id": "llmInstructions:SafetyAndFilters"
+        "@id": "genAiInstructions:SafetyAndFilters"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -225,12 +225,12 @@
       "schema:maxValue": 1
     },
     {
-      "@id": "llmInstructions:offensivenessFilter",
+      "@id": "genAiInstructions:offensivenessFilter",
       "@type": "rdf:Property",
       "rdfs:label": "Offensiveness Filter",
       "rdfs:comment": "Filters content that is violent or offensive. Min = 0 (no filtering), Max = 1 (strict filtering).",
       "rdfs:domain": {
-        "@id": "llmInstructions:SafetyAndFilters"
+        "@id": "genAiInstructions:SafetyAndFilters"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -239,24 +239,24 @@
       "schema:maxValue": 1
     },
     {
-      "@id": "llmInstructions:hallucinationDetection",
+      "@id": "genAiInstructions:hallucinationDetection",
       "@type": "rdf:Property",
       "rdfs:label": "Hallucination Detection",
       "rdfs:comment": "Detects and mitigates factually incorrect outputs. Type: Boolean (true = enabled, false = disabled).",
       "rdfs:domain": {
-        "@id": "llmInstructions:SafetyAndFilters"
+        "@id": "genAiInstructions:SafetyAndFilters"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
       }
     },
     {
-      "@id": "llmInstructions:profanityFilter",
+      "@id": "genAiInstructions:profanityFilter",
       "@type": "rdf:Property",
       "rdfs:label": "Profanity Filter",
       "rdfs:comment": "Filters vulgar or inappropriate words. Min = 0 (no filtering), Max = 1 (strict filtering).",
       "rdfs:domain": {
-        "@id": "llmInstructions:SafetyAndFilters"
+        "@id": "genAiInstructions:SafetyAndFilters"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -265,12 +265,12 @@
       "schema:maxValue": 1
     },
     {
-      "@id": "llmInstructions:sensitiveContentFilter",
+      "@id": "genAiInstructions:sensitiveContentFilter",
       "@type": "rdf:Property",
       "rdfs:label": "Sensitive Content Filter",
       "rdfs:comment": "Filters sensitive topics such as politics or religion. Min = 0 (no filtering), Max = 1 (strict filtering).",
       "rdfs:domain": {
-        "@id": "llmInstructions:SafetyAndFilters"
+        "@id": "genAiInstructions:SafetyAndFilters"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -279,12 +279,12 @@
       "schema:maxValue": 1
     },
     {
-      "@id": "llmInstructions:biasMitigation",
+      "@id": "genAiInstructions:biasMitigation",
       "@type": "rdf:Property",
       "rdfs:label": "Bias Mitigation",
       "rdfs:comment": "Reduces biases in responses. Possible values: 'none', 'low', 'medium', 'high'.",
       "rdfs:domain": {
-        "@id": "llmInstructions:SafetyAndFilters"
+        "@id": "genAiInstructions:SafetyAndFilters"
       },
       "rdfs:range": {
         "@id": "schema:Text"
@@ -293,7 +293,7 @@
       "schema:isMultipleSelectionAllowed": false
     },
     {
-      "@id": "llmInstructions:PerformanceAndConstraints",
+      "@id": "genAiInstructions:PerformanceAndConstraints",
       "@type": "rdfs:Class",
       "rdfs:subClassOf": {
         "@id": "schema:Thing"
@@ -302,12 +302,12 @@
       "rdfs:comment": "Parameters for optimizing performance and resource constraints."
     },
     {
-      "@id": "llmInstructions:responseTimeLimit",
+      "@id": "genAiInstructions:responseTimeLimit",
       "@type": "rdf:Property",
       "rdfs:label": "Response Time Limit",
       "rdfs:comment": "Sets a time limit for generating a response. Min = 0 (no limit), Max = Indefinite.",
       "rdfs:domain": {
-        "@id": "llmInstructions:PerformanceAndConstraints"
+        "@id": "genAiInstructions:PerformanceAndConstraints"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -315,12 +315,12 @@
       "schema:minValue": 0
     },
     {
-      "@id": "llmInstructions:energyEfficiencyMode",
+      "@id": "genAiInstructions:energyEfficiencyMode",
       "@type": "rdf:Property",
       "rdfs:label": "Energy Efficiency Mode",
       "rdfs:comment": "Optimizes resource usage by adjusting energy efficiency. Multiple values can be selected from: 'low', 'medium', 'high'.",
       "rdfs:domain": {
-        "@id": "llmInstructions:PerformanceAndConstraints"
+        "@id": "genAiInstructions:PerformanceAndConstraints"
       },
       "rdfs:range": {
         "@id": "schema:Text"
@@ -329,12 +329,12 @@
       "schema:isMultipleSelectionAllowed": false
     },
     {
-      "@id": "llmInstructions:processingMode",
+      "@id": "genAiInstructions:processingMode",
       "@type": "rdf:Property",
       "rdfs:label": "Processing Mode",
       "rdfs:comment": "Selects between speed or quality optimization. Possible values: 'fast', 'balanced', 'highQuality'.",
       "rdfs:domain": {
-        "@id": "llmInstructions:PerformanceAndConstraints"
+        "@id": "genAiInstructions:PerformanceAndConstraints"
       },
       "rdfs:range": {
         "@id": "schema:Text"
@@ -343,12 +343,12 @@
       "schema:isMultipleSelectionAllowed": false
     },
     {
-      "@id": "llmInstructions:computeBudget",
+      "@id": "genAiInstructions:computeBudget",
       "@type": "rdf:Property",
       "rdfs:label": "Compute Budget",
       "rdfs:comment": "Defines a limit on the resources used for response generation. Min = 0 (unlimited), Max = Indefinite.",
       "rdfs:domain": {
-        "@id": "llmInstructions:PerformanceAndConstraints"
+        "@id": "genAiInstructions:PerformanceAndConstraints"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -356,7 +356,7 @@
       "schema:minValue": 0
     },
     {
-      "@id": "llmInstructions:ContextAndAdjustments",
+      "@id": "genAiInstructions:ContextAndAdjustments",
       "@type": "rdfs:Class",
       "rdfs:subClassOf": {
         "@id": "schema:Thing"
@@ -365,12 +365,12 @@
       "rdfs:comment": "Parameters that influence the use and adjustment of context in text generation."
     },
     {
-      "@id": "llmInstructions:logitBias",
+      "@id": "genAiInstructions:logitBias",
       "@type": "rdf:Property",
       "rdfs:label": "Logit Bias",
       "rdfs:comment": "Influences the probabilities of specific tokens. Min = -10 (strongly reduce likelihood), Max = 10 (strongly increase likelihood).",
       "rdfs:domain": {
-        "@id": "llmInstructions:ContextAndAdjustments"
+        "@id": "genAiInstructions:ContextAndAdjustments"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -379,12 +379,12 @@
       "schema:maxValue": 10
     },
     {
-      "@id": "llmInstructions:contextSensitivity",
+      "@id": "genAiInstructions:contextSensitivity",
       "@type": "rdf:Property",
       "rdfs:label": "Context Sensitivity",
       "rdfs:comment": "Adjusts the importance given to the provided context. Min = 0 (ignore context), Max = 1 (fully rely on context).",
       "rdfs:domain": {
-        "@id": "llmInstructions:ContextAndAdjustments"
+        "@id": "genAiInstructions:ContextAndAdjustments"
       },
       "rdfs:range": {
         "@id": "schema:Number"
@@ -393,12 +393,12 @@
       "schema:maxValue": 1
     },
     {
-      "@id": "llmInstructions:adaptiveContextScaling",
+      "@id": "genAiInstructions:adaptiveContextScaling",
       "@type": "rdf:Property",
       "rdfs:label": "Adaptive Context Scaling",
       "rdfs:comment": "Dynamically adjusts the size of the context used. Possible values: 'none', 'low', 'medium', 'high'.",
       "rdfs:domain": {
-        "@id": "llmInstructions:ContextAndAdjustments"
+        "@id": "genAiInstructions:ContextAndAdjustments"
       },
       "rdfs:range": {
         "@id": "schema:Text"
@@ -407,7 +407,7 @@
       "schema:isMultipleSelectionAllowed": false
     },
     {
-      "@id": "llmInstructions:XIA",
+      "@id": "genAiInstructions:XIA",
       "@type": "rdfs:Class",
       "rdfs:label": "XIA",
       "rdfs:comment": "Instructions related to interpretability, explainability, and transparency of language models.",
@@ -416,72 +416,72 @@
       }
     },
     {
-      "@id": "llmInstructions:enableAttentionAnalysis",
+      "@id": "genAiInstructions:enableAttentionAnalysis",
       "@type": "rdf:Property",
       "rdfs:label": "Enable Attention Analysis",
       "rdfs:comment": "Highlights specific parts of the input text that the model focused on while generating its response.",
       "rdfs:domain": {
-        "@id": "llmInstructions:XIA"
+        "@id": "genAiInstructions:XIA"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
       }
     },
     {
-      "@id": "llmInstructions:displayNeuronActivations",
+      "@id": "genAiInstructions:displayNeuronActivations",
       "@type": "rdf:Property",
       "rdfs:label": "Display Neuron Activations",
       "rdfs:comment": "Provides insights into the internal workings of the model by showing how information is processed across layers.",
       "rdfs:domain": {
-        "@id": "llmInstructions:XIA"
+        "@id": "genAiInstructions:XIA"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
       }
     },
     {
-      "@id": "llmInstructions:provideJustifications",
+      "@id": "genAiInstructions:provideJustifications",
       "@type": "rdf:Property",
       "rdfs:label": "Provide Justifications for Each Response",
       "rdfs:comment": "Accompanies each response with a justification, explanation, or reasoning that led to the answer.",
       "rdfs:domain": {
-        "@id": "llmInstructions:XIA"
+        "@id": "genAiInstructions:XIA"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
       }
     },
     {
-      "@id": "llmInstructions:useExamplesAndCounterExamples",
+      "@id": "genAiInstructions:useExamplesAndCounterExamples",
       "@type": "rdf:Property",
       "rdfs:label": "Use Examples and Counterexamples to Illustrate Responses",
       "rdfs:comment": "Examples make explanations more concrete, while counterexamples clarify how input changes affect the output.",
       "rdfs:domain": {
-        "@id": "llmInstructions:XIA"
+        "@id": "genAiInstructions:XIA"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
       }
     },
     {
-      "@id": "llmInstructions:explainStepByStep",
+      "@id": "genAiInstructions:explainStepByStep",
       "@type": "rdf:Property",
       "rdfs:label": "Explain Reasoning Step by Step",
       "rdfs:comment": "Requests the model to detail its reasoning to clarify the steps followed.",
       "rdfs:domain": {
-        "@id": "llmInstructions:XIA"
+        "@id": "genAiInstructions:XIA"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
       }
     },
     {
-      "@id": "llmInstructions:activateExplanationMode",
+      "@id": "genAiInstructions:activateExplanationMode",
       "@type": "rdf:Property",
       "rdfs:label": "Activate Explanation Mode",
       "rdfs:comment": "Requests the model to activate all available explainability options to maximize transparency.",
       "rdfs:domain": {
-        "@id": "llmInstructions:XIA"
+        "@id": "genAiInstructions:XIA"
       },
       "rdfs:range": {
         "@id": "schema:Boolean"
