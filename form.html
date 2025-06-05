@@ -114,21 +114,6 @@
             color: var(--text-color);
         }
 
-        .form-group label::after {
-            content: "?";
-            margin-left: 0.5rem;
-            font-size: 0.75rem;
-            color: var(--primary-color);
-            background: rgba(37, 99, 235, 0.1);
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: help;
-        }
-
         .form-group input[type="text"],
         .form-group input[type="number"],
         .form-group select {
@@ -498,11 +483,36 @@
             font-size: 0.75rem;
             color: var(--text-light);
         }
+
+        .slider-tooltip {
+            position: absolute;
+            top: -2.2rem;
+            left: 0;
+            transform: translateX(-50%);
+            background: #2563eb;
+            color: white;
+            padding: 0.25rem 0.7rem;
+            border-radius: 1rem;
+            font-weight: bold;
+            font-size: 1rem;
+            pointer-events: none;
+            transition: left 0.1s;
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
-    <h1>LLM Instruction Builder</h1>
-    
+    <h1>GenAiInstructions</h1>
+    <div class="description-block" style="max-width:800px;margin:2rem auto 2.5rem auto;padding:1.5rem 2rem;background:var(--card-background,#fff);border-radius:0.5rem;box-shadow:0 2px 8px 0 rgb(0 0 0 / 0.06);border:1px solid #e2e8f0;">
+        <h2 style="color:#2563eb;font-size:1.5rem;margin-bottom:0.5rem;">Description</h2>
+        <p style="color:#334155;font-size:1.05rem;line-height:1.7;margin-bottom:0.5rem;">
+            This form allows you to generate and validate LLM (Large Language Model) instructions using a structured schema. Configure creativity, output, safety, and performance parameters for your AI models in a user-friendly way with GenAiInstructions.
+        </p>
+        <div style="color:#64748b;font-size:0.98rem;margin-top:0.5rem;">
+            Created by <b>Luc Bizeul</b>, under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="color:#2563eb;">CC BY-NC 4.0</a> license.
+        </div>
+    </div>
+
     <div class="cognitive-level-section">
         <h2>Cognitive Level</h2>
         <p>Select the cognitive level required for your instruction, based on Bloom's taxonomy:</p>
@@ -573,6 +583,42 @@
     </footer>
 
     <script>
+        // Correction : placer updateInstructions, updateInstructionsDisplay et validateInstructions en haut du script
+        let instructions = {};
+        function updateInstructions(parameter, value) {
+            instructions[parameter] = value;
+            updateInstructionsDisplay();
+        }
+        function updateInstructionsDisplay() {
+            const formattedInstructions = JSON.stringify(instructions, null, 4);
+            const pre = document.createElement('pre');
+            pre.textContent = formattedInstructions;
+            
+            const instructionsContainer = document.getElementById('instructions');
+            const validationResult = document.getElementById('validation-result');
+            const copyButton = document.getElementById('copy-button');
+            
+            instructionsContainer.innerHTML = '';
+            instructionsContainer.appendChild(pre);
+            instructionsContainer.appendChild(validationResult);
+            instructionsContainer.appendChild(copyButton);
+            
+            validateInstructions(instructions);
+        }
+        function validateInstructions(data) {
+            const validationResult = document.getElementById('validation-result');
+            if (typeof validate === 'function' && validate(data)) {
+                validationResult.innerHTML = '<div class="validation-success">✅ Instructions are valid</div>';
+            } else if (typeof validate === 'function') {
+                const errors = validate.errors.map(error => 
+                    `<div class="validation-error">❌ ${error.instancePath} ${error.message}</div>`
+                ).join('');
+                validationResult.innerHTML = `<div class="validation-error">${errors}</div>`;
+            } else {
+                validationResult.innerHTML = '';
+            }
+        }
+
         // Initialize after DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof Ajv === 'undefined') {
@@ -585,7 +631,6 @@
             const schemaURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/schema.json";
             let validator = new Ajv({ allErrors: true });
             let validate;
-            let instructions = {};
 
             // Fetch JSON Schema and initialize validator
             async function initializeValidator() {
@@ -671,7 +716,9 @@
                         classProperties.forEach(prop => {
                             console.log('Processing property:', prop);
                             const formGroup = createFormField(prop);
-                            section.appendChild(formGroup);
+                            if (formGroup && formGroup.nodeType === 1) {
+                                section.appendChild(formGroup);
+                            }
                         });
 
                         formContainer.appendChild(section);
@@ -691,43 +738,6 @@
                 } catch (error) {
                     console.error('Error loading form:', error);
                     document.getElementById('form-container').innerHTML = `<p class="error">Error loading form: ${error.message}</p>`;
-                }
-            }
-
-            // Update instructions display
-            function updateInstructionsDisplay() {
-                const formattedInstructions = JSON.stringify(instructions, null, 4);
-                const pre = document.createElement('pre');
-                pre.textContent = formattedInstructions;
-                
-                const instructionsContainer = document.getElementById('instructions');
-                const validationResult = document.getElementById('validation-result');
-                const copyButton = document.getElementById('copy-button');
-                
-                instructionsContainer.innerHTML = '';
-                instructionsContainer.appendChild(pre);
-                instructionsContainer.appendChild(validationResult);
-                instructionsContainer.appendChild(copyButton);
-                
-                validateInstructions(instructions);
-            }
-
-            // Update instructions
-            function updateInstructions(parameter, value) {
-                instructions[parameter] = value;
-                updateInstructionsDisplay();
-            }
-
-            // Validate instructions
-            function validateInstructions(data) {
-                const validationResult = document.getElementById('validation-result');
-                if (validate(data)) {
-                    validationResult.innerHTML = '<div class="validation-success">✅ Instructions are valid</div>';
-                } else {
-                    const errors = validate.errors.map(error => 
-                        `<div class="validation-error">❌ ${error.instancePath} ${error.message}</div>`
-                    ).join('');
-                    validationResult.innerHTML = `<div class="validation-error">${errors}</div>`;
                 }
             }
 
@@ -756,15 +766,38 @@
             });
         });
 
-        // Function to create a slider with marks
-        function createSlider(property, min, max, step, marks) {
+        // Function to create a simple slider (like Toxicity Filter)
+        function createSimpleSlider(property, min, max, step) {
             const formGroup = document.createElement('div');
             formGroup.className = 'form-group';
+
+            // Label + valeur à côté
+            const labelRow = document.createElement('div');
+            labelRow.style.display = 'flex';
+            labelRow.style.alignItems = 'center';
+            labelRow.style.gap = '1rem';
 
             const label = document.createElement('label');
             label.htmlFor = property["@id"];
             label.textContent = property["rdfs:label"] || property["@id"].split(':')[1];
-            formGroup.appendChild(label);
+            label.style.marginBottom = '0';
+            labelRow.appendChild(label);
+
+            // Badge valeur
+            const valueBadge = document.createElement('span');
+            valueBadge.className = 'slider-value-badge';
+            valueBadge.textContent = Number.isInteger(parseFloat(property["schema:defaultValue"] || min)) ? (property["schema:defaultValue"] || min) : parseFloat(property["schema:defaultValue"] || min).toFixed(2);
+            valueBadge.style.background = '#2563eb';
+            valueBadge.style.color = 'white';
+            valueBadge.style.fontWeight = 'bold';
+            valueBadge.style.fontSize = '1rem';
+            valueBadge.style.padding = '0.2rem 0.9rem';
+            valueBadge.style.borderRadius = '1rem';
+            valueBadge.style.marginLeft = '0.5rem';
+            valueBadge.style.display = 'inline-block';
+            labelRow.appendChild(valueBadge);
+
+            formGroup.appendChild(labelRow);
 
             if (property["rdfs:comment"]) {
                 const helpText = document.createElement('div');
@@ -775,6 +808,8 @@
 
             const sliderContainer = document.createElement('div');
             sliderContainer.className = 'slider-container';
+            sliderContainer.style.position = 'relative';
+            sliderContainer.style.marginBottom = '1.5rem';
 
             const slider = document.createElement('input');
             slider.type = 'range';
@@ -783,47 +818,47 @@
             slider.max = max;
             slider.step = step;
             slider.value = property["schema:defaultValue"] || min;
-
-            const valueDisplay = document.createElement('div');
-            valueDisplay.className = 'slider-value';
-            valueDisplay.textContent = slider.value;
-            sliderContainer.appendChild(valueDisplay);
-
-            const marksContainer = document.createElement('div');
-            marksContainer.className = 'slider-marks';
-            marks.forEach(mark => {
-                const markElement = document.createElement('div');
-                markElement.className = 'slider-mark';
-                markElement.setAttribute('data-value', mark);
-                marksContainer.appendChild(markElement);
-            });
-            sliderContainer.appendChild(marksContainer);
-
-            const labelsContainer = document.createElement('div');
-            labelsContainer.className = 'slider-labels';
-            const minLabel = document.createElement('span');
-            minLabel.textContent = min;
-            const maxLabel = document.createElement('span');
-            maxLabel.textContent = max;
-            labelsContainer.appendChild(minLabel);
-            labelsContainer.appendChild(maxLabel);
-            sliderContainer.appendChild(labelsContainer);
+            slider.style.width = '100%';
 
             sliderContainer.appendChild(slider);
             formGroup.appendChild(sliderContainer);
 
-            // Update value display on input
+            const labelsContainer = document.createElement('div');
+            labelsContainer.className = 'slider-labels';
+            labelsContainer.style.display = 'flex';
+            labelsContainer.style.justifyContent = 'space-between';
+            labelsContainer.style.marginTop = '0.25rem';
+            const minLabel = document.createElement('span');
+            minLabel.textContent = (+min).toFixed(1);
+            const maxLabel = document.createElement('span');
+            maxLabel.textContent = (+max).toFixed(1);
+            labelsContainer.appendChild(minLabel);
+            labelsContainer.appendChild(maxLabel);
+            formGroup.appendChild(labelsContainer);
+
             slider.addEventListener('input', (e) => {
-                valueDisplay.textContent = e.target.value;
-                valueDisplay.style.left = `${((e.target.value - min) / (max - min)) * 100}%`;
-                updateInstructions(property["@id"], parseFloat(e.target.value));
+                let val = parseFloat(e.target.value);
+                valueBadge.textContent = Number.isInteger(val) ? val : val.toFixed(2);
+                updateInstructions(property["@id"], val);
             });
+
+            // Initialiser la valeur dans instructions
+            updateInstructions(property["@id"], parseFloat(slider.value));
 
             return formGroup;
         }
 
-        // Modify the form building code to use sliders for appropriate properties
+        // Modifier createFormField pour utiliser createSimpleSlider pour tous les sliders numériques
         function createFormField(property) {
+            const rangeType = property["rdfs:range"]?.["@id"] || "schema:Text";
+            if (rangeType === "schema:Number" || rangeType === "schema:Integer") {
+                const min = property["schema:minValue"] || 0;
+                const max = property["schema:maxValue"] || 1;
+                const step = rangeType === "schema:Number" ? 0.01 : 1;
+                return createSimpleSlider(property, min, max, step);
+            }
+
+            // Pour les autres types, affichage classique
             const formGroup = document.createElement('div');
             formGroup.className = 'form-group';
 
@@ -832,7 +867,6 @@
             label.textContent = property["rdfs:label"] || property["@id"].split(':')[1];
             formGroup.appendChild(label);
 
-            // Add help text if available
             if (property["rdfs:comment"]) {
                 const helpText = document.createElement('div');
                 helpText.className = 'help-text';
@@ -840,53 +874,38 @@
                 formGroup.appendChild(helpText);
             }
 
-            // Create appropriate input based on type
             let input;
-            const rangeType = property["rdfs:range"]?.["@id"] || "schema:Text";
-            
-            if (rangeType === "schema:Number" || rangeType === "schema:Integer") {
-                // Check if this property should use a slider
-                if (property["@id"].includes("temperature") || 
-                    property["@id"].includes("top_P") || 
-                    property["@id"].includes("top_K") ||
-                    property["@id"].includes("repetitionPenalty") ||
-                    property["@id"].includes("diversityPenalty")) {
-                    
-                    const min = property["schema:minValue"] || 0;
-                    const max = property["schema:maxValue"] || 1;
-                    const step = rangeType === "schema:Number" ? 0.1 : 1;
-                    const marks = [min, (min + max) / 2, max];
-                    
-                    return createSlider(property, min, max, step, marks);
-                }
-                
-                input = document.createElement('input');
-                input.type = 'number';
-                input.id = property["@id"];
-                input.step = rangeType === "schema:Number" ? "0.1" : "1";
-                if (property["schema:minValue"] !== undefined) input.min = property["schema:minValue"];
-                if (property["schema:maxValue"] !== undefined) input.max = property["schema:maxValue"];
-                input.value = property["schema:defaultValue"] || "";
-            } else if (rangeType === "schema:Boolean") {
+            if (rangeType === "schema:Boolean") {
                 input = document.createElement('input');
                 input.type = 'checkbox';
                 input.id = property["@id"];
                 input.checked = property["schema:defaultValue"] || false;
-            } else {
+                updateInstructions(property["@id"], input.checked);
+            } else if (property["schema:validValues"]) {
                 input = document.createElement('select');
                 input.id = property["@id"];
-                const options = property["schema:validValues"] || ["Option 1", "Option 2"];
-                options.forEach(option => {
+                property["schema:validValues"].forEach(option => {
                     const opt = document.createElement('option');
                     opt.value = option;
                     opt.textContent = option;
                     input.appendChild(opt);
                 });
+                updateInstructions(property["@id"], input.value);
+            } else {
+                input = document.createElement('input');
+                input.type = 'text';
+                input.id = property["@id"];
+                input.value = property["schema:defaultValue"] || '';
+                updateInstructions(property["@id"], input.value);
             }
 
-            // Add event listener
             input.addEventListener('change', (e) => {
-                const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+                let value;
+                if (e.target.type === 'checkbox') {
+                    value = e.target.checked;
+                } else {
+                    value = e.target.value;
+                }
                 updateInstructions(property["@id"], value);
             });
 

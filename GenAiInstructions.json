@@ -7,8 +7,10 @@
   },
   "@graph": [
     {
-      "@id": "llmInstructions:metadata",
+      "@id": "GenAiInstructions",
       "@type": "schema:CreativeWork",
+      "rdfs:label": "GenAiInstructions",
+      "rdfs:comment": "GenAiInstructions is a schema for generating and validating LLM (Large Language Model) instructions, allowing easy configuration of creativity, output, safety, and performance parameters for AI models.",
       "schema:author": {
         "@type": "schema:Person",
         "schema:name": "LucBizeul",
