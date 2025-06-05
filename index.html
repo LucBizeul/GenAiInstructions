@@ -8,101 +8,389 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/6.12.6/ajv.min.js"></script>
     <style>
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --secondary-color: #64748b;
-            --success-color: #22c55e;
-            --error-color: #ef4444;
-            --warning-color: #f59e0b;
-            --info-color: #3b82f6;
-            --background-color: #f8fafc;
+            /* Palette harmonieuse basée sur le bleu indigo avec des tons neutres chaleureux */
+            --primary-color: #4f46e5;
+            --primary-hover: #3730a3;
+            --primary-light: #6366f1;
+            --primary-ultra-light: #eef2ff;
+            
+            --secondary-color: #6b7280;
+            --secondary-light: #9ca3af;
+            --secondary-ultra-light: #f9fafb;
+            
+            --success-color: #059669;
+            --success-light: #10b981;
+            --success-bg: #ecfdf5;
+            
+            --error-color: #dc2626;
+            --error-light: #ef4444;
+            --error-bg: #fef2f2;
+            
+            --warning-color: #d97706;
+            --warning-light: #f59e0b;
+            --warning-bg: #fffbeb;
+            
+            --info-color: #0284c7;
+            --info-light: #0ea5e9;
+            --info-bg: #f0f9ff;
+            
+            /* Couleurs de fond et de structure */
+            --background-color: #fafbfc;
+            --background-secondary: #f1f5f9;
             --card-background: #ffffff;
-            --border-color: #e2e8f0;
-            --text-color: #1e293b;
-            --text-light: #64748b;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --surface-elevated: #ffffff;
+            
+            /* Bordures et séparateurs */
+            --border-color: #e1e5e9;
+            --border-light: #f1f3f4;
+            --border-focus: #4f46e5;
+            
+            /* Texte avec contraste amélioré */
+            --text-primary: #111827;
+            --text-secondary: #374151;
+            --text-tertiary: #6b7280;
+            --text-placeholder: #9ca3af;
+            --text-on-primary: #ffffff;
+            
+            /* Ombres subtiles et harmonieuses */
+            --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 3px 0 rgb(0 0 0 / 0.1);
             --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+            
+            /* Rayons de bordure cohérents */
+            --radius-xs: 0.25rem;
+            --radius-sm: 0.375rem;
             --radius: 0.5rem;
-            --transition: all 0.2s ease-in-out;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            
+            /* Transitions fluides */
+            --transition-fast: all 0.15s ease-out;
+            --transition: all 0.2s ease-out;
+            --transition-slow: all 0.3s ease-out;
+            
+            /* Espacement cohérent */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing: 0.75rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+        }
+
+        /* ========== PROGRESS BAR STYLES ========== */
+        .progress-container {
+            background: var(--card-background);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-2xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .progress-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .progress-percentage {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: var(--primary-ultra-light);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+        }
+
+        .progress-bar-track {
+            width: 100%;
+            height: 8px;
+            background: var(--border-light);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: var(--radius);
+            transition: width 0.3s ease-out;
+            width: 0%;
+        }
+
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+            z-index: 2;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: 2px solid var(--border-color);
+            background: var(--card-background);
+            color: var(--text-tertiary);
+            transition: var(--transition);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .step.active .step-number {
+            background: var(--primary-color);
+            color: var(--text-on-primary);
+            border-color: var(--primary-color);
+        }
+
+        .step.completed .step-number {
+            background: var(--success-color);
+            color: var(--text-on-primary);
+            border-color: var(--success-color);
+        }
+
+        .step.completed .step-number::before {
+            content: "✓";
+            font-weight: bold;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            text-align: center;
+            line-height: 1.3;
+            max-width: 80px;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .step.completed .step-label {
+            color: var(--success-color);
+        }
+
+        .steps-line {
+            position: absolute;
+            top: 16px;
+            left: 32px;
+            right: 32px;
+            height: 2px;
+            background: var(--border-light);
+            z-index: 1;
+        }
+
+        .steps-line-progress {
+            height: 100%;
+            background: var(--success-color);
+            transition: width 0.3s ease-out;
+            width: 0%;
+        }
+
+        /* ========== FORM STEPS STYLES ========== */
+        .form-step {
+            display: none;
+            animation: fadeInStep 0.3s ease-out;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeInStep {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--spacing-2xl);
+            padding-top: var(--spacing-xl);
+            border-top: 1px solid var(--border-light);
+        }
+
+        .nav-button {
+            background: var(--primary-color);
+            color: var(--text-on-primary);
+            border: none;
+            padding: var(--spacing-md) var(--spacing-xl);
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-button:disabled {
+            background: var(--secondary-color);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .nav-button.secondary {
+            background: var(--card-background);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-button.secondary:hover {
+            background: var(--background-secondary);
+            border-color: var(--primary-color);
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            line-height: 1.5;
-            color: var(--text-color);
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            font-weight: 400;
+            color: var(--text-primary);
             background-color: var(--background-color);
             margin: 0;
-            padding: 2rem;
+            padding: var(--spacing-lg);
+            letter-spacing: -0.01em;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 var(--spacing-lg);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 600;
+            line-height: 1.3;
+            margin: 0;
+            letter-spacing: -0.025em;
         }
 
         h1 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--text-color);
-            margin-bottom: 2rem;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-2xl);
             text-align: center;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing);
+        }
+
+        p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0 0 var(--spacing-md) 0;
         }
 
         .form-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            gap: var(--spacing-2xl);
+            margin-bottom: var(--spacing-2xl);
         }
 
         .section {
             background: var(--card-background);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-            margin-bottom: 1.5rem;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-xl);
             border: 1px solid var(--border-color);
             transition: var(--transition);
         }
 
         .section:hover {
             box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
+            border-color: var(--border-focus);
         }
 
         .section-header {
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--spacing-xl);
         }
 
         .section-title {
             font-size: 1.25rem;
             font-weight: 600;
             color: var(--primary-color);
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border-color);
+            margin-bottom: var(--spacing);
+            padding-bottom: var(--spacing);
+            border-bottom: 2px solid var(--border-light);
+            letter-spacing: -0.02em;
         }
 
         .section-description {
             font-size: 0.875rem;
-            color: var(--text-light);
-            line-height: 1.5;
-            padding: 0.75rem;
-            background: rgba(37, 99, 235, 0.05);
+            color: var(--text-tertiary);
+            line-height: 1.6;
+            padding: var(--spacing-md);
+            background: var(--primary-ultra-light);
             border-radius: var(--radius);
             border-left: 3px solid var(--primary-color);
-            margin-top: 0.5rem;
+            margin-top: var(--spacing);
         }
 
         .section-description::before {
             content: "ℹ️";
-            margin-right: 0.5rem;
+            margin-right: var(--spacing-sm);
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--spacing-xl);
             position: relative;
         }
 
@@ -110,51 +398,69 @@
             display: flex;
             align-items: center;
             font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
+            font-size: 0.95rem;
+            margin-bottom: var(--spacing);
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
         }
 
         .form-group input[type="text"],
         .form-group input[type="number"],
         .form-group select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
+            padding: var(--spacing-md) var(--spacing-md);
+            border: 1.5px solid var(--border-color);
             border-radius: var(--radius);
             font-size: 1rem;
+            font-family: inherit;
             transition: var(--transition);
             background-color: var(--card-background);
+            color: var(--text-primary);
+            line-height: 1.5;
         }
 
         .form-group input[type="text"]:focus,
         .form-group input[type="number"]:focus,
         .form-group select:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            background-color: var(--surface-elevated);
+        }
+
+        .form-group input[type="text"]:hover,
+        .form-group input[type="number"]:hover,
+        .form-group select:hover {
+            border-color: var(--primary-light);
         }
 
         .form-group input[type="checkbox"] {
             width: 1.25rem;
             height: 1.25rem;
-            margin-right: 0.5rem;
+            margin-right: var(--spacing);
             accent-color: var(--primary-color);
+            border-radius: var(--radius-xs);
         }
 
         .help-text {
             font-size: 0.875rem;
-            color: var(--text-light);
-            margin-top: 0.5rem;
-            padding: 0.75rem;
-            background: rgba(37, 99, 235, 0.05);
+            color: var(--text-tertiary);
+            margin-top: var(--spacing);
+            padding: var(--spacing-md);
+            background: var(--info-bg);
             border-radius: var(--radius);
-            border-left: 3px solid var(--primary-color);
-            line-height: 1.5;
+            border-left: 3px solid var(--info-color);
+            line-height: 1.6;
         }
 
         .help-text::before {
             content: "ℹ️";
-            margin-right: 0.5rem;
+            margin-right: var(--spacing-sm);
+        }
+
+        .help-text strong {
+            color: var(--text-secondary);
+            font-weight: 600;
         }
 
         .instructions-container {
@@ -174,57 +480,204 @@
         }
 
         #instructions {
+            background: var(--card-background);
+            border-radius: var(--radius);
+            padding: 0;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .instructions-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .instructions-header .update-indicator {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .instructions-content {
+            padding: 1.5rem;
+        }
+
+        .instruction-section {
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+            background: rgba(37, 99, 235, 0.02);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            transition: var(--transition);
+        }
+
+        .instruction-section:hover {
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .instruction-section h4 {
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 0.75rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .instruction-section h4::before {
+            content: "⚙️";
+            margin-right: 0.5rem;
+        }
+
+        .instruction-value {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .instruction-value.number {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            border-color: var(--info-color);
+        }
+
+        .instruction-value.boolean {
+            background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+            border-color: var(--success-color);
+        }
+
+        .instruction-value.text {
+            background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+            border-color: var(--warning-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-state::before {
+            content: "⏳";
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .json-preview {
             background: #1e1e1e;
             border-radius: var(--radius);
             padding: 1rem;
-            margin-bottom: 1rem;
-            overflow-x: auto;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-color);
         }
 
-        #instructions pre {
+        .json-preview h4 {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin: 0 0 0.75rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .json-preview pre {
             margin: 0;
             color: #d4d4d4;
             font-family: 'Fira Code', monospace;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--background-color);
+            border-top: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .stats-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stats-item strong {
+            color: var(--text-color);
         }
 
         .validation-success {
             color: var(--success-color);
             font-weight: 500;
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: rgba(34, 197, 94, 0.1);
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--success-bg);
             border-radius: var(--radius);
-            border: 1px solid var(--success-color);
+            border: 1px solid var(--success-light);
+            line-height: 1.5;
         }
 
         .validation-error {
             color: var(--error-color);
             font-weight: 500;
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: rgba(239, 68, 68, 0.1);
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--error-bg);
             border-radius: var(--radius);
-            border: 1px solid var(--error-color);
+            border: 1px solid var(--error-light);
+            line-height: 1.5;
         }
 
         .copy-button {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--text-on-primary);
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: var(--spacing-md) var(--spacing-xl);
             border-radius: var(--radius);
             cursor: pointer;
             font-weight: 500;
+            font-size: 0.95rem;
+            font-family: inherit;
             transition: var(--transition);
             width: 100%;
-            margin-top: 1rem;
+            margin-top: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            letter-spacing: -0.01em;
         }
 
         .copy-button:hover {
             background-color: var(--primary-hover);
             transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .copy-button:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-xs);
         }
 
         .cognitive-level-section {
@@ -328,18 +781,201 @@
             padding: 0.5rem;
         }
 
-        @media (max-width: 768px) {
+        /* ========== RESPONSIVE DESIGN ========== */
+        
+        /* Mobile First - Base styles for mobile */
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+            
+            /* Titre principal responsive */
+            h1 {
+                font-size: 1.8rem !important;
+                line-height: 1.1 !important;
+                padding: 0 0.5rem;
+            }
+            
+            /* Sous-titre responsive */
+            p {
+                font-size: 1rem !important;
+                padding: 0 0.5rem;
+            }
+            
+            /* Sections */
+            .section {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            /* Description block */
+            .description-block {
+                margin: 1rem auto !important;
+                padding: 1rem !important;
+            }
+            
+            /* Form container */
             .form-container {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
-
+            
+            /* Instructions container */
+            .instructions-container {
+                position: static !important;
+                margin-top: 1rem;
+                padding: 1rem;
+            }
+            
+            /* Cognitive level grid */
+            .cognitive-level-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .cognitive-level-card {
+                padding: 1rem;
+            }
+            
+            /* Form elements */
+            .form-group input[type="text"],
+            .form-group input[type="number"],
+            .form-group select {
+                padding: 0.625rem;
+                font-size: 0.95rem;
+            }
+            
+            /* Copy button */
+            .copy-button {
+                padding: 0.625rem 1rem;
+                font-size: 0.95rem;
+            }
+            
+            /* Instructions display */
+            #instructions pre {
+                font-size: 0.8rem;
+                overflow-x: scroll;
+            }
+        }
+        
+        /* Tablet - Medium screens */
+        @media (min-width: 481px) and (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            /* Titre principal */
+            h1 {
+                font-size: 2.1rem !important;
+            }
+            
+            /* Form container - single column on tablet */
+            .form-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            /* Instructions container */
             .instructions-container {
                 position: static;
                 margin-top: 2rem;
             }
-
+            
+            /* Cognitive level grid - 2 columns on tablet */
             .cognitive-level-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            /* Description block */
+            .description-block {
+                padding: 1.25rem !important;
+            }
+        }
+        
+        /* Desktop - Large screens */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            body {
+                padding: 1.5rem;
+            }
+            
+            /* Form container - 2 columns on desktop */
+            .form-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+            
+            /* Cognitive level grid - 3 columns on desktop */
+            .cognitive-level-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
+            }
+        }
+        
+        /* Large Desktop - Extra large screens */
+        @media (min-width: 1025px) {
+            body {
+                padding: 2rem;
+            }
+            
+            /* Form container - 2 columns with more space */
+            .form-container {
+                grid-template-columns: 2fr 1fr;
+                gap: 2.5rem;
+            }
+            
+            /* Cognitive level grid - 3 columns with better spacing */
+            .cognitive-level-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.25rem;
+            }
+            
+            /* Instructions container - sticky on large screens */
+            .instructions-container {
+                position: sticky;
+                top: 2rem;
+                max-height: calc(100vh - 4rem);
+                overflow-y: auto;
+            }
+        }
+        
+        /* Landscape orientation adjustments for mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .cognitive-level-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-container {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        /* High DPI screens adjustments */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            #instructions pre {
+                font-size: 0.9rem;
+            }
+            
+            .slider-tooltip {
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Accessibility - Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .section:hover {
+                transform: none;
             }
         }
 
@@ -502,14 +1138,66 @@
     </style>
 </head>
 <body>
-    <h1>GenAiInstructions</h1>
+    <div style="text-align:center;max-width:1000px;margin:1rem auto 3rem auto;padding:0 1rem;">
+        <h1 style="font-size:2.5rem;font-weight:800;color:#1e293b;margin-bottom:1rem;line-height:1.2;">
+            🤖 Generative AI Instructions Builder
+        </h1>
+        <p style="font-size:1.2rem;color:#64748b;font-weight:500;margin-bottom:2rem;line-height:1.5;">
+            Create structured instructions to effectively guide generative AI models
+        </p>
+    </div>
+    
     <div class="description-block" style="max-width:800px;margin:2rem auto 2.5rem auto;padding:1.5rem 2rem;background:var(--card-background,#fff);border-radius:0.5rem;box-shadow:0 2px 8px 0 rgb(0 0 0 / 0.06);border:1px solid #e2e8f0;">
         <h2 style="color:#2563eb;font-size:1.5rem;margin-bottom:0.5rem;">Description</h2>
         <p style="color:#334155;font-size:1.05rem;line-height:1.7;margin-bottom:0.5rem;">
-            This form allows you to generate and validate LLM (Large Language Model) instructions using a structured schema. Configure creativity, output, safety, and performance parameters for your AI models in a user-friendly way with GenAiInstructions.
+            This user interface allows you to generate and validate instructions for Large Language Models (LLM) using a structured schema. Easily configure creativity, output, safety, and performance parameters for your AI models.
         </p>
         <div style="color:#64748b;font-size:0.98rem;margin-top:0.5rem;">
-            Created by <b>Luc Bizeul</b>, under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="color:#2563eb;">CC BY-NC 4.0</a> license.
+            Created by <b>Luc Bizeul</b>, under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener" style="color:#2563eb;">CC BY-NC 4.0</a> license
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-header">
+            <h3 class="progress-title">📋 Form Progress</h3>
+            <span class="progress-percentage" id="progress-percentage">0%</span>
+        </div>
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+        <div class="steps-container">
+            <div class="steps-line">
+                <div class="steps-line-progress" id="steps-line-progress"></div>
+            </div>
+            <div class="step active" id="step-1">
+                <div class="step-number">1</div>
+                <div class="step-label">Cognitive Level</div>
+            </div>
+            <div class="step" id="step-2">
+                <div class="step-number">2</div>
+                <div class="step-label">Creativity Control</div>
+            </div>
+            <div class="step" id="step-3">
+                <div class="step-number">3</div>
+                <div class="step-label">Output Control</div>
+            </div>
+            <div class="step" id="step-4">
+                <div class="step-number">4</div>
+                <div class="step-label">Safety & Filters</div>
+            </div>
+            <div class="step" id="step-5">
+                <div class="step-number">5</div>
+                <div class="step-label">Performance</div>
+            </div>
+            <div class="step" id="step-6">
+                <div class="step-number">6</div>
+                <div class="step-label">Context & Adjustments</div>
+            </div>
+            <div class="step" id="step-7">
+                <div class="step-number">7</div>
+                <div class="step-label">XIA</div>
+            </div>
         </div>
     </div>
 
@@ -517,11 +1205,40 @@
         <p>Loading parameters...</p>
     </div>
 
-    <h2>Generated Instructions</h2>
-    <div class="instructions-container" id="instructions">
-        <p>Your instructions will appear here.</p>
-        <div id="validation-result"></div>
-        <button class="copy-button" id="copy-button">Copy to Clipboard</button>
+    <!-- Step Navigation -->
+    <div class="step-navigation" id="step-navigation" style="display: none;">
+        <button class="nav-button secondary" id="prev-button" onclick="previousStep()">← Previous</button>
+        <button class="nav-button" id="next-button" onclick="nextStep()">Next →</button>
+    </div>
+
+    <div class="instructions-container">
+        <div id="instructions">
+            <div class="instructions-header">
+                <span>📋 Generated Instructions</span>
+                <div class="update-indicator" id="update-indicator"></div>
+            </div>
+            <div class="instructions-content" id="instructions-content">
+                <div class="empty-state">
+                    <p>Your instructions will appear here in real-time</p>
+                    <small>Start filling the form to see the preview</small>
+                </div>
+            </div>
+            <div class="stats-bar" id="stats-bar" style="display: none;">
+                <div class="stats-item">
+                    <span>📊</span>
+                    <span><strong id="param-count">0</strong> parameters</span>
+                </div>
+                <div class="stats-item">
+                    <span>✅</span>
+                    <span id="validation-status">Pending</span>
+                </div>
+                <div class="stats-item">
+                    <span>⏱️</span>
+                    <span>Updated <span id="last-update">--</span></span>
+                </div>
+            </div>
+        </div>
+        <button class="copy-button" id="copy-button">📋 Copy Instructions</button>
     </div>
 
     <footer style="margin-top:2rem; text-align:center; color:#64748b; font-size:0.95rem;">
@@ -540,6 +1257,11 @@
         let instructions = {};
         let validator = null;
         let validate = null;
+        let currentStep = 1;
+        let totalSteps = 4;
+        let formSteps = {};
+        let totalFields = 0;
+        let filledFields = 0;
 
         // Initialiser Ajv au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
@@ -550,6 +1272,120 @@
         function updateInstructions(parameter, value) {
             instructions[parameter] = value;
             updateInstructionsDisplay(); // Appel sans await mais la fonction gère l'affichage
+            updateProgress(); // Mettre à jour la progression
+        }
+
+        // Fonctions de gestion des étapes et progression
+        function updateProgress() {
+            // Calculer les champs remplis
+            filledFields = 0;
+            for (const key in instructions) {
+                if (instructions[key] !== undefined && instructions[key] !== null && instructions[key] !== '') {
+                    filledFields++;
+                }
+            }
+
+            // Calculer le pourcentage
+            const percentage = totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
+            
+            // Mettre à jour la barre de progression
+            const progressBar = document.getElementById('progress-bar-fill');
+            const progressPercentage = document.getElementById('progress-percentage');
+            
+            if (progressBar && progressPercentage) {
+                progressBar.style.width = `${percentage}%`;
+                progressPercentage.textContent = `${percentage}%`;
+            }
+
+            // Mettre à jour les étapes
+            updateStepStatus();
+        }
+
+        function updateStepStatus() {
+            const steps = document.querySelectorAll('.step');
+            const stepsLineProgress = document.getElementById('steps-line-progress');
+            
+            steps.forEach((step, index) => {
+                const stepNumber = index + 1;
+                if (stepNumber < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (stepNumber === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+
+            // Mettre à jour la ligne de progression
+            const lineProgress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            if (stepsLineProgress) {
+                stepsLineProgress.style.width = `${lineProgress}%`;
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                // Masquer l'étape actuelle
+                const currentStepElement = document.getElementById(`form-step-${currentStep}`);
+                if (currentStepElement) {
+                    currentStepElement.classList.remove('active');
+                }
+
+                currentStep++;
+                
+                // Afficher la nouvelle étape
+                const nextStepElement = document.getElementById(`form-step-${currentStep}`);
+                if (nextStepElement) {
+                    nextStepElement.classList.add('active');
+                }
+
+                updateStepStatus();
+                updateNavigationButtons();
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                // Masquer l'étape actuelle
+                const currentStepElement = document.getElementById(`form-step-${currentStep}`);
+                if (currentStepElement) {
+                    currentStepElement.classList.remove('active');
+                }
+
+                currentStep--;
+                
+                // Afficher la nouvelle étape
+                const prevStepElement = document.getElementById(`form-step-${currentStep}`);
+                if (prevStepElement) {
+                    prevStepElement.classList.add('active');
+                }
+
+                updateStepStatus();
+                updateNavigationButtons();
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevButton = document.getElementById('prev-button');
+            const nextButton = document.getElementById('next-button');
+            
+            if (prevButton) {
+                prevButton.disabled = currentStep === 1;
+            }
+            
+            if (nextButton) {
+                if (currentStep === totalSteps) {
+                    nextButton.textContent = 'Complete ✓';
+                    nextButton.onclick = () => {
+                        alert('Form completed! 🎉');
+                    };
+                } else {
+                    nextButton.textContent = 'Next →';
+                    nextButton.onclick = nextStep;
+                }
+            }
         }
 
         // Correction : lors de la création du formulaire, appeler updateInstructionsDisplay après le chargement
@@ -650,71 +1486,94 @@
         }
 
         // Copy to clipboard functionality
-        document.getElementById('copy-button').addEventListener('click', function() {
-            const instructionsText = document.querySelector('#instructions pre').textContent;
-            navigator.clipboard.writeText(instructionsText).then(() => {
-                this.textContent = 'Copied!';
+        document.getElementById('copy-button').addEventListener('click', async function() {
+            try {
+                const compactInstructions = await getCompactInstructions();
+                const instructionsText = JSON.stringify(compactInstructions, null, 2);
+                
+                await navigator.clipboard.writeText(instructionsText);
+                
+                const originalText = this.textContent;
+                this.textContent = '✅ Copié!';
+                this.style.backgroundColor = 'var(--success-color)';
+                
                 setTimeout(() => {
-                    this.textContent = 'Copy to Clipboard';
+                    this.textContent = originalText;
+                    this.style.backgroundColor = 'var(--primary-color)';
                 }, 2000);
-            });
+            } catch (error) {
+                console.error('Erreur lors de la copie:', error);
+                this.textContent = '❌ Erreur';
+                setTimeout(() => {
+                    this.textContent = '📋 Copier les Instructions';
+                }, 2000);
+            }
         });
 
-        // Générer dynamiquement la section Cognitive Level à partir du JSON
+        // Générer dynamiquement la section Cognitive Level simple comme les autres champs
         function renderCognitiveLevels(cognitiveLevels) {
-            const container = document.createElement('div');
-            container.className = 'cognitive-level-section';
+            const section = document.createElement('div');
+            section.className = 'section';
+            
+            const sectionHeader = document.createElement('div');
+            sectionHeader.className = 'section-header';
+            
+            const sectionTitle = document.createElement('h3');
+            sectionTitle.className = 'section-title';
+            sectionTitle.textContent = 'Cognitive Level';
+            sectionHeader.appendChild(sectionTitle);
+            
+            const sectionDescription = document.createElement('div');
+            sectionDescription.className = 'section-description';
+            sectionDescription.textContent = 'Defines the cognitive complexity level for instruction processing based on Bloom\'s taxonomy. This determines how the AI model should approach problem-solving and knowledge application.';
+            sectionHeader.appendChild(sectionDescription);
+            
+            section.appendChild(sectionHeader);
 
-            const title = document.createElement('h2');
-            title.textContent = 'Cognitive Level';
-            container.appendChild(title);
+            // Créer le form group simple
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
 
-            // Grille des niveaux
-            const grid = document.createElement('div');
-            grid.className = 'cognitive-level-grid';
-            cognitiveLevels.forEach(level => {
-                const card = document.createElement('div');
-                card.className = 'cognitive-level-card';
-                const h3 = document.createElement('h3');
-                h3.textContent = level.label;
-                card.appendChild(h3);
-                const desc = document.createElement('p');
-                desc.textContent = level.description;
-                card.appendChild(desc);
-                const ex = document.createElement('div');
-                ex.className = 'example';
-                ex.textContent = level.example;
-                card.appendChild(ex);
-                grid.appendChild(card);
-            });
-            container.appendChild(grid);
+            const label = document.createElement('label');
+            label.htmlFor = 'cognitive-level';
+            label.textContent = 'Cognitive Level';
+            formGroup.appendChild(label);
 
-            // Sélecteur
-            const selectorDiv = document.createElement('div');
-            selectorDiv.className = 'cognitive-level-selector';
-            const selectorLabel = document.createElement('label');
-            selectorLabel.textContent = 'Select cognitive level:';
-            selectorDiv.appendChild(selectorLabel);
+            const helpText = document.createElement('div');
+            helpText.className = 'help-text';
+            helpText.innerHTML = `
+                <strong>Cognitive levels:</strong><br>
+                • <strong>Remember:</strong> Recall facts and basic concepts<br>
+                • <strong>Understand:</strong> Explain ideas or concepts<br>
+                • <strong>Apply:</strong> Use information in new situations<br>
+                • <strong>Analyze:</strong> Draw connections and examine relationships<br>
+                • <strong>Evaluate:</strong> Justify decisions and assess information<br>
+                • <strong>Create:</strong> Produce original work and new ideas
+            `;
+            formGroup.appendChild(helpText);
+
             const select = document.createElement('select');
             select.id = 'cognitive-level';
+            
             cognitiveLevels.forEach(level => {
                 const opt = document.createElement('option');
                 opt.value = level.value;
                 opt.textContent = level.label;
                 select.appendChild(opt);
             });
-            selectorDiv.appendChild(select);
-            container.appendChild(selectorDiv);
 
             // Event pour mettre à jour les instructions
             select.addEventListener('change', function() {
                 updateInstructions('genAiInstructions:cognitiveLevel', this.value);
             });
 
+            formGroup.appendChild(select);
+            section.appendChild(formGroup);
+
             // Initialiser la valeur dans instructions
             updateInstructions('genAiInstructions:cognitiveLevel', select.value);
 
-            return container;
+            return section;
         }
 
         // Fonction pour créer un slider simple
@@ -722,10 +1581,36 @@
             const formGroup = document.createElement('div');
             formGroup.className = 'form-group';
 
+            // Container pour le label avec valeur
+            const labelContainer = document.createElement('div');
+            labelContainer.style.display = 'flex';
+            labelContainer.style.justifyContent = 'space-between';
+            labelContainer.style.alignItems = 'center';
+            labelContainer.style.marginBottom = 'var(--spacing)';
+
             const label = document.createElement('label');
             label.htmlFor = property["@id"];
             label.textContent = property["rdfs:label"] || property["@id"].split(':')[1];
-            formGroup.appendChild(label);
+            label.style.margin = '0';
+            
+            // Badge pour afficher la valeur courante
+            const valueBadge = document.createElement('span');
+            valueBadge.className = 'value-badge';
+            valueBadge.style.cssText = `
+                background: var(--primary-color);
+                color: var(--text-on-primary);
+                padding: var(--spacing-xs) var(--spacing-sm);
+                border-radius: var(--radius-sm);
+                font-size: 0.875rem;
+                font-weight: 500;
+                min-width: 2.5rem;
+                text-align: center;
+            `;
+            valueBadge.textContent = property["schema:defaultValue"] || min;
+
+            labelContainer.appendChild(label);
+            labelContainer.appendChild(valueBadge);
+            formGroup.appendChild(labelContainer);
 
             if (property["rdfs:comment"]) {
                 const helpText = document.createElement('div');
@@ -748,11 +1633,7 @@
             slider.step = step;
             slider.value = property["schema:defaultValue"] || min;
 
-            // Tooltip pour afficher la valeur
-            const tooltip = document.createElement('div');
-            tooltip.className = 'slider-tooltip';
-            tooltip.textContent = slider.value;
-            sliderContainer.appendChild(tooltip);
+
 
             // Labels min/max
             const labels = document.createElement('div');
@@ -761,23 +1642,14 @@
 
             // Event listeners
             slider.addEventListener('input', function() {
-                tooltip.textContent = this.value;
-                const percent = ((this.value - min) / (max - min)) * 100;
-                tooltip.style.left = `${percent}%`;
-                updateInstructions(property["@id"], parseFloat(this.value));
+                const value = this.value;
+                // Mettre à jour le badge de valeur
+                valueBadge.textContent = value;
+                // Mettre à jour les instructions
+                updateInstructions(property["@id"], parseFloat(value));
             });
 
-            slider.addEventListener('mouseenter', function() {
-                tooltip.style.opacity = '1';
-            });
 
-            slider.addEventListener('mouseleave', function() {
-                tooltip.style.opacity = '0';
-            });
-
-            // Initialiser la position du tooltip
-            const initialPercent = ((slider.value - min) / (max - min)) * 100;
-            tooltip.style.left = `${initialPercent}%`;
 
             sliderContainer.appendChild(slider);
             formGroup.appendChild(sliderContainer);
@@ -886,23 +1758,137 @@
             return compact;
         }
 
-        // Modifier updateInstructionsDisplay pour utiliser le compact
+        // Fonction pour obtenir le type de valeur pour le style
+        function getValueType(value) {
+            if (typeof value === 'number') return 'number';
+            if (typeof value === 'boolean') return 'boolean';
+            return 'text';
+        }
+
+        // Fonction pour formater le nom d'affichage d'une propriété
+        function formatPropertyName(propertyId) {
+            const name = propertyId.split(':')[1] || propertyId;
+            return name.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+        }
+
+        // Fonction pour formater la valeur d'affichage
+        function formatValue(value) {
+            if (typeof value === 'boolean') {
+                return value ? '✅ Enabled' : '❌ Disabled';
+            }
+            if (typeof value === 'number') {
+                return value % 1 === 0 ? value.toString() : value.toFixed(2);
+            }
+            return value;
+        }
+
+        // Fonction principale d'affichage des instructions améliorée
         async function updateInstructionsDisplay() {
             const compactInstructions = await getCompactInstructions();
-            const formattedInstructions = JSON.stringify(compactInstructions, null, 4);
-            const pre = document.createElement('pre');
-            pre.textContent = formattedInstructions;
-            
-            const instructionsContainer = document.getElementById('instructions');
-            const validationResult = document.getElementById('validation-result');
-            const copyButton = document.getElementById('copy-button');
-            
-            instructionsContainer.innerHTML = '';
-            instructionsContainer.appendChild(pre);
-            instructionsContainer.appendChild(validationResult);
-            instructionsContainer.appendChild(copyButton);
-            
-            validateInstructions(compactInstructions);
+            const instructionsContent = document.getElementById('instructions-content');
+            const statsBar = document.getElementById('stats-bar');
+            const paramCount = document.getElementById('param-count');
+            const lastUpdate = document.getElementById('last-update');
+            const updateIndicator = document.getElementById('update-indicator');
+
+            // Animation de mise à jour
+            updateIndicator.style.animation = 'none';
+            updateIndicator.offsetHeight; // Force reflow
+            updateIndicator.style.animation = 'pulse 2s infinite';
+
+            // Mise à jour de l'heure
+            const now = new Date();
+            lastUpdate.textContent = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            // Compteur de paramètres
+            const parameterCount = Object.keys(compactInstructions).length;
+            paramCount.textContent = parameterCount;
+
+            if (parameterCount === 0) {
+                // État vide
+                instructionsContent.innerHTML = `
+                    <div class="empty-state">
+                        <p>Your instructions will appear here in real-time</p>
+                        <small>Start filling the form to see the preview</small>
+                    </div>
+                `;
+                statsBar.style.display = 'none';
+            } else {
+                // Affichage structuré des instructions
+                let sectionsHTML = '';
+                
+                // Grouper les paramètres par catégorie
+                const categories = {
+                    'Cognitive Level': [],
+                    'Creativity': [],
+                    'Output': [],
+                    'Performance': [],
+                    'Safety': [],
+                    'Other': []
+                };
+
+                for (const [key, value] of Object.entries(compactInstructions)) {
+                    const propertyName = formatPropertyName(key);
+                    const valueType = getValueType(value);
+                    const formattedValue = formatValue(value);
+                    
+                    const item = { key, propertyName, value, valueType, formattedValue };
+                    
+                    if (key.includes('cognitive')) {
+                        categories['Cognitive Level'].push(item);
+                    } else if (key.includes('creativity') || key.includes('temperature') || key.includes('random')) {
+                        categories['Creativity'].push(item);
+                    } else if (key.includes('output') || key.includes('format') || key.includes('length')) {
+                        categories['Output'].push(item);
+                    } else if (key.includes('performance') || key.includes('speed') || key.includes('constraint')) {
+                        categories['Performance'].push(item);
+                    } else if (key.includes('safety') || key.includes('filter') || key.includes('security')) {
+                        categories['Safety'].push(item);
+                    } else {
+                        categories['Other'].push(item);
+                    }
+                }
+
+                // Générer le HTML pour chaque catégorie non vide
+                for (const [categoryName, items] of Object.entries(categories)) {
+                    if (items.length > 0) {
+                        sectionsHTML += `<div class="instruction-section">`;
+                        sectionsHTML += `<h4>${categoryName}</h4>`;
+                        
+                        items.forEach(item => {
+                            sectionsHTML += `
+                                <div style="margin-bottom: 1rem;">
+                                    <div style="font-weight: 500; color: var(--text-color); margin-bottom: 0.25rem; font-size: 0.9rem;">
+                                        ${item.propertyName}
+                                    </div>
+                                    <div class="instruction-value ${item.valueType}">
+                                        ${item.formattedValue}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        sectionsHTML += `</div>`;
+                    }
+                }
+
+                // Aperçu JSON
+                const jsonPreview = `
+                    <div class="json-preview">
+                        <h4>📄 JSON Preview</h4>
+                        <pre>${JSON.stringify(compactInstructions, null, 2)}</pre>
+                    </div>
+                `;
+
+                instructionsContent.innerHTML = sectionsHTML + jsonPreview;
+                statsBar.style.display = 'flex';
+            }
+
+
         }
 
         // Fonction pour initialiser le validateur (restaurée)
@@ -923,19 +1909,7 @@
             }
         }
 
-        function validateInstructions(data) {
-            const validationResult = document.getElementById('validation-result');
-            if (typeof validate === 'function' && validate(data)) {
-                validationResult.innerHTML = '<div class="validation-success">✅ Instructions are valid</div>';
-            } else if (typeof validate === 'function') {
-                const errors = validate.errors.map(error =>
-                    `<div class="validation-error">❌ ${error.instancePath} ${error.message}</div>`
-                ).join('');
-                validationResult.innerHTML = `<div class="validation-error">${errors}</div>`;
-            } else {
-                validationResult.innerHTML = '';
-            }
-        }
+
     </script>
 </body>
 </html>
