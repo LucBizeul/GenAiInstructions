@@ -1,38 +1,25 @@
-# Schemas-LLMInstructions
-Schema LLM Instructions is a Schema.org extension that allows for providing instructions and technical parameters to large language models (LLMs). It aims to improve communication between humans and LLMs by enabling users to specify precise tasks, constraints, and preferences for text generation.
+# GenAiInstructions
 
+GenAiInstructions is a user-friendly interface and schema for generating and validating LLM (Large Language Model) instructions. Easily configure creativity, output, safety, and performance parameters for your AI models.
 
-**Schema LLM Instructions** is a autonomous Schema.org extension that allows for providing instructions and technical parameters to large language models (LLMs). It aims to improve communication between humans and LLMs by enabling users to specify precise tasks, constraints, and preferences for text generation.
+## Features
+- Visual form to build LLM instructions
+- Real-time JSON generation and validation
+- Supports creativity, output, safety, performance, and explainability controls
+- Modern, responsive UI
+- Open and extensible schema
 
-**Main features:**
+## Usage
+1. Open `form.html` in your browser or use the hosted version on GitHub Pages.
+2. Fill in the parameters as needed (creativity, output, safety, etc.).
+3. Copy the generated JSON instructions for use with your LLM system.
 
-* **Instructions:** Allows for providing instructions in natural language or in a structured format to guide the language model.
-* **Technical parameters:** Offers a set of properties to control the technical parameters of the model, such as temperature, top-k sampling, repetition penalty, etc.
-* **TechnicalParameter subclass:** Organizes the technical parameters under a single class for better structure and readability.
-* **Author, version, and date:** Includes properties to specify the author, version, and creation date of the extension.
+## JSON Schema
+The main schema file is [`GenAiInstructions.json`](https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/GenAiInstructions.json).
 
-**Objectives:**
+## License
+Created by Luc Bizeul — Licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)
 
-* Improve the accuracy and relevance of LLM responses.
-* Encourage creativity and the exploration of original ideas.
-* Facilitate the adaptation of LLMs to specific tasks and contexts.
-* Promote more intuitive and effective communication between humans and LLMs.
+---
 
-**Target audience:**
-
-* Developers of language models.
-* Users of language models.
-* Artificial intelligence researchers.
-* Anyone wishing to interact with LLMs in a more precise and controlled manner.
-
-**Status:**
-
-Personal extension of Schema.org, potentially evolving into a broader extension or a proposal for an official extension.
-
-**Remarks:**
-
-* The extension is still under development and may be subject to change.
-* Full documentation of the extension is in progress.
-* Users are encouraged to provide feedback and suggestions to improve the extension.
-
-I hope this description is clear and informative. Feel free to ask me if you would like me to add or modify anything.
+*Formerly known as LLMInstructions*
