@@ -513,57 +513,6 @@
         </div>
     </div>
 
-    <div class="cognitive-level-section">
-        <h2>Cognitive Level</h2>
-        <p>Select the cognitive level required for your instruction, based on Bloom's taxonomy:</p>
-        
-        <div class="cognitive-level-grid">
-            <div class="cognitive-level-card">
-                <h4>Remember</h4>
-                <p>Recall of information</p>
-                <p class="example">Example: "List Newton's 3 laws"</p>
-            </div>
-            <div class="cognitive-level-card">
-                <h4>Understand</h4>
-                <p>Reformulation and explanation</p>
-                <p class="example">Example: "Explain the Product-Market Fit principle"</p>
-            </div>
-            <div class="cognitive-level-card">
-                <h4>Apply</h4>
-                <p>Direct implementation</p>
-                <p class="example">Example: "Use this method to solve this customer case"</p>
-            </div>
-            <div class="cognitive-level-card">
-                <h4>Analyze</h4>
-                <p>Decomposition and structure</p>
-                <p class="example">Example: "Compare these two pricing strategies"</p>
-            </div>
-            <div class="cognitive-level-card">
-                <h4>Evaluate</h4>
-                <p>Critical judgment</p>
-                <p class="example">Example: "What is the weakness of this approach?"</p>
-            </div>
-            <div class="cognitive-level-card">
-                <h4>Create</h4>
-                <p>Original creation</p>
-                <p class="example">Example: "Propose a new onboarding model"</p>
-            </div>
-        </div>
-
-        <div class="form-group" style="margin-top: 20px;">
-            <label for="cognitive-level">Select Cognitive Level:</label>
-            <select id="cognitive-level" class="cognitive-level-select">
-                <option value="">Select a level...</option>
-                <option value="remember">Remember</option>
-                <option value="understand">Understand</option>
-                <option value="apply">Apply</option>
-                <option value="analyze">Analyze</option>
-                <option value="evaluate">Evaluate</option>
-                <option value="create">Create</option>
-            </select>
-        </div>
-    </div>
-
     <div class="form-container" id="form-container">
         <p>Loading parameters...</p>
     </div>
@@ -583,269 +532,179 @@
     </footer>
 
     <script>
-        // Correction : placer updateInstructions, updateInstructionsDisplay et validateInstructions en haut du script
+        // Déclaration globale des URLs JSON et schéma
+        const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/GenAiInstructions.json";
+        const schemaURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/schema.json";
+
         let instructions = {};
         function updateInstructions(parameter, value) {
             instructions[parameter] = value;
-            updateInstructionsDisplay();
-        }
-        function updateInstructionsDisplay() {
-            const formattedInstructions = JSON.stringify(instructions, null, 4);
-            const pre = document.createElement('pre');
-            pre.textContent = formattedInstructions;
-            
-            const instructionsContainer = document.getElementById('instructions');
-            const validationResult = document.getElementById('validation-result');
-            const copyButton = document.getElementById('copy-button');
-            
-            instructionsContainer.innerHTML = '';
-            instructionsContainer.appendChild(pre);
-            instructionsContainer.appendChild(validationResult);
-            instructionsContainer.appendChild(copyButton);
-            
-            validateInstructions(instructions);
-        }
-        function validateInstructions(data) {
-            const validationResult = document.getElementById('validation-result');
-            if (typeof validate === 'function' && validate(data)) {
-                validationResult.innerHTML = '<div class="validation-success">✅ Instructions are valid</div>';
-            } else if (typeof validate === 'function') {
-                const errors = validate.errors.map(error => 
-                    `<div class="validation-error">❌ ${error.instancePath} ${error.message}</div>`
-                ).join('');
-                validationResult.innerHTML = `<div class="validation-error">${errors}</div>`;
-            } else {
-                validationResult.innerHTML = '';
-            }
+            updateInstructionsDisplay(); // Appel sans await mais la fonction gère l'affichage
         }
 
-        // Initialize after DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof Ajv === 'undefined') {
-                console.error('Ajv library not loaded');
-                document.getElementById('form-container').innerHTML = '<p class="error">Error: Validation library not loaded. Please check your internet connection and refresh the page.</p>';
-                return;
-            }
-
-            const jsonURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/GenAiInstructions.json";
-            const schemaURL = "https://raw.githubusercontent.com/LucBizeul/Schemas-LLMInstructions/main/schema.json";
-            let validator = new Ajv({ allErrors: true });
-            let validate;
-
-            // Fetch JSON Schema and initialize validator
-            async function initializeValidator() {
-                try {
-                    const response = await fetch(schemaURL, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    if (!response.ok) throw new Error(`Error fetching schema: ${response.statusText}`);
-                    const schema = await response.json();
-                    validate = validator.compile(schema);
-                    console.log('Schema loaded:', schema);
-                } catch (error) {
-                    console.error('Error initializing validator:', error);
-                }
-            }
-
-            // Fetch JSON data and build form
-            async function loadForm() {
-                try {
-                    const response = await fetch(jsonURL, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    if (!response.ok) throw new Error(`Error fetching JSON: ${response.statusText}`);
-                    const data = await response.json();
-                    console.log('JSON data loaded:', data);
-                    
-                    const formContainer = document.getElementById('form-container');
-                    formContainer.innerHTML = ''; // Clear loading message
-
-                    // Extract classes and properties from @graph
-                    const classes = data["@graph"].filter(item => item["@type"] === "rdfs:Class");
-                    const properties = data["@graph"].filter(item => item["@type"] === "rdf:Property");
-                    
-                    console.log('Classes found:', classes);
-                    console.log('Properties found:', properties);
-
-                    // Group properties by domain
-                    const propertiesByDomain = {};
-                    properties.forEach(prop => {
-                        const domain = prop["rdfs:domain"]?.["@id"] || "other";
-                        if (!propertiesByDomain[domain]) {
-                            propertiesByDomain[domain] = [];
-                        }
-                        propertiesByDomain[domain].push(prop);
-                    });
-                    
-                    console.log('Properties by domain:', propertiesByDomain);
-
-                    // Create sections for each class
-                    classes.forEach(cls => {
-                        console.log('Processing class:', cls);
-                        const section = document.createElement('div');
-                        section.className = 'section';
-                        
-                        const sectionHeader = document.createElement('div');
-                        sectionHeader.className = 'section-header';
-                        
-                        const sectionTitle = document.createElement('h3');
-                        sectionTitle.className = 'section-title';
-                        sectionTitle.textContent = cls["rdfs:label"] || cls["@id"].split(':')[1];
-                        sectionHeader.appendChild(sectionTitle);
-
-                        // Add section description if available
-                        if (cls["rdfs:comment"]) {
-                            const sectionDescription = document.createElement('div');
-                            sectionDescription.className = 'section-description';
-                            sectionDescription.textContent = cls["rdfs:comment"];
-                            sectionHeader.appendChild(sectionDescription);
-                        }
-
-                        section.appendChild(sectionHeader);
-
-                        // Add properties for this class
-                        const classProperties = propertiesByDomain[cls["@id"]] || [];
-                        console.log('Properties for class', cls["@id"], ':', classProperties);
-                        
-                        classProperties.forEach(prop => {
-                            console.log('Processing property:', prop);
-                            const formGroup = createFormField(prop);
-                            if (formGroup && formGroup.nodeType === 1) {
-                                section.appendChild(formGroup);
-                            }
-                        });
-
-                        formContainer.appendChild(section);
-                    });
-
-                    // Initialize instructions object
-                    instructions = {};
-                    properties.forEach(prop => {
-                        if (prop["schema:defaultValue"] !== undefined) {
-                            instructions[prop["@id"]] = prop["schema:defaultValue"];
-                        }
-                    });
-
-                    // Update instructions display
-                    updateInstructionsDisplay();
-
-                } catch (error) {
-                    console.error('Error loading form:', error);
-                    document.getElementById('form-container').innerHTML = `<p class="error">Error loading form: ${error.message}</p>`;
-                }
-            }
-
-            // Copy to clipboard functionality
-            document.getElementById('copy-button').addEventListener('click', function() {
-                const instructionsText = document.querySelector('#instructions pre').textContent;
-                navigator.clipboard.writeText(instructionsText).then(() => {
-                    this.textContent = 'Copied!';
-                    setTimeout(() => {
-                        this.textContent = 'Copy to Clipboard';
-                    }, 2000);
+        // Correction : lors de la création du formulaire, appeler updateInstructionsDisplay après le chargement
+        async function loadForm() {
+            try {
+                const response = await fetch(jsonURL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 });
-            });
+                if (!response.ok) throw new Error(`Error fetching JSON: ${response.statusText}`);
+                const data = await response.json();
+                console.log('JSON data loaded:', data);
+                
+                const formContainer = document.getElementById('form-container');
+                formContainer.innerHTML = ''; // Clear loading message
 
-            // Add cognitive level handling
-            document.getElementById('cognitive-level').addEventListener('change', function() {
-                const value = this.value;
-                if (value) {
-                    updateInstructions('llmInstructions:cognitiveLevel', value);
+                // Cognitive Levels
+                if (data.cognitiveLevels) {
+                    const cognitiveSection = renderCognitiveLevels(data.cognitiveLevels);
+                    formContainer.appendChild(cognitiveSection);
                 }
-            });
 
-            // Initialize
-            initializeValidator().then(() => {
-                loadForm();
+                // Extract classes and properties from @graph
+                const classes = data["@graph"].filter(item => item["@type"] === "rdfs:Class");
+                const properties = data["@graph"].filter(item => item["@type"] === "rdf:Property");
+                
+                console.log('Classes found:', classes);
+                console.log('Properties found:', properties);
+
+                // Group properties by domain
+                const propertiesByDomain = {};
+                properties.forEach(prop => {
+                    const domain = prop["rdfs:domain"]?.["@id"] || "other";
+                    if (!propertiesByDomain[domain]) {
+                        propertiesByDomain[domain] = [];
+                    }
+                    propertiesByDomain[domain].push(prop);
+                });
+                
+                console.log('Properties by domain:', propertiesByDomain);
+
+                // Create sections for each class
+                classes.forEach(cls => {
+                    console.log('Processing class:', cls);
+                    const section = document.createElement('div');
+                    section.className = 'section';
+                    
+                    const sectionHeader = document.createElement('div');
+                    sectionHeader.className = 'section-header';
+                    
+                    const sectionTitle = document.createElement('h3');
+                    sectionTitle.className = 'section-title';
+                    sectionTitle.textContent = cls["rdfs:label"] || cls["@id"].split(':')[1];
+                    sectionHeader.appendChild(sectionTitle);
+
+                    // Add section description if available
+                    if (cls["rdfs:comment"]) {
+                        const sectionDescription = document.createElement('div');
+                        sectionDescription.className = 'section-description';
+                        sectionDescription.textContent = cls["rdfs:comment"];
+                        sectionHeader.appendChild(sectionDescription);
+                    }
+
+                    section.appendChild(sectionHeader);
+
+                    // Add properties for this class
+                    const classProperties = propertiesByDomain[cls["@id"]] || [];
+                    console.log('Properties for class', cls["@id"], ':', classProperties);
+                    
+                    classProperties.forEach(prop => {
+                        console.log('Processing property:', prop);
+                        const formGroup = createFormField(prop);
+                        if (formGroup && formGroup.nodeType === 1) {
+                            section.appendChild(formGroup);
+                        }
+                    });
+
+                    formContainer.appendChild(section);
+                });
+
+                // Initialize instructions object
+                instructions = {};
+                properties.forEach(prop => {
+                    if (prop["schema:defaultValue"] !== undefined) {
+                        instructions[prop["@id"]] = prop["schema:defaultValue"];
+                    }
+                });
+
+                // Update instructions display
+                await updateInstructionsDisplay();
+
+            } catch (error) {
+                console.error('Error loading form:', error);
+                document.getElementById('form-container').innerHTML = `<p class="error">Error loading form: ${error.message}</p>`;
+            }
+        }
+
+        // Copy to clipboard functionality
+        document.getElementById('copy-button').addEventListener('click', function() {
+            const instructionsText = document.querySelector('#instructions pre').textContent;
+            navigator.clipboard.writeText(instructionsText).then(() => {
+                this.textContent = 'Copied!';
+                setTimeout(() => {
+                    this.textContent = 'Copy to Clipboard';
+                }, 2000);
             });
         });
 
-        // Function to create a simple slider (like Toxicity Filter)
-        function createSimpleSlider(property, min, max, step) {
-            const formGroup = document.createElement('div');
-            formGroup.className = 'form-group';
+        // Générer dynamiquement la section Cognitive Level à partir du JSON
+        function renderCognitiveLevels(cognitiveLevels) {
+            const container = document.createElement('div');
+            container.className = 'cognitive-level-section';
 
-            // Label + valeur à côté
-            const labelRow = document.createElement('div');
-            labelRow.style.display = 'flex';
-            labelRow.style.alignItems = 'center';
-            labelRow.style.gap = '1rem';
+            const title = document.createElement('h2');
+            title.textContent = 'Cognitive Level';
+            container.appendChild(title);
 
-            const label = document.createElement('label');
-            label.htmlFor = property["@id"];
-            label.textContent = property["rdfs:label"] || property["@id"].split(':')[1];
-            label.style.marginBottom = '0';
-            labelRow.appendChild(label);
+            // Grille des niveaux
+            const grid = document.createElement('div');
+            grid.className = 'cognitive-level-grid';
+            cognitiveLevels.forEach(level => {
+                const card = document.createElement('div');
+                card.className = 'cognitive-level-card';
+                const h3 = document.createElement('h3');
+                h3.textContent = level.label;
+                card.appendChild(h3);
+                const desc = document.createElement('p');
+                desc.textContent = level.description;
+                card.appendChild(desc);
+                const ex = document.createElement('div');
+                ex.className = 'example';
+                ex.textContent = level.example;
+                card.appendChild(ex);
+                grid.appendChild(card);
+            });
+            container.appendChild(grid);
 
-            // Badge valeur
-            const valueBadge = document.createElement('span');
-            valueBadge.className = 'slider-value-badge';
-            valueBadge.textContent = Number.isInteger(parseFloat(property["schema:defaultValue"] || min)) ? (property["schema:defaultValue"] || min) : parseFloat(property["schema:defaultValue"] || min).toFixed(2);
-            valueBadge.style.background = '#2563eb';
-            valueBadge.style.color = 'white';
-            valueBadge.style.fontWeight = 'bold';
-            valueBadge.style.fontSize = '1rem';
-            valueBadge.style.padding = '0.2rem 0.9rem';
-            valueBadge.style.borderRadius = '1rem';
-            valueBadge.style.marginLeft = '0.5rem';
-            valueBadge.style.display = 'inline-block';
-            labelRow.appendChild(valueBadge);
+            // Sélecteur
+            const selectorDiv = document.createElement('div');
+            selectorDiv.className = 'cognitive-level-selector';
+            const selectorLabel = document.createElement('label');
+            selectorLabel.textContent = 'Select cognitive level:';
+            selectorDiv.appendChild(selectorLabel);
+            const select = document.createElement('select');
+            select.id = 'cognitive-level';
+            cognitiveLevels.forEach(level => {
+                const opt = document.createElement('option');
+                opt.value = level.value;
+                opt.textContent = level.label;
+                select.appendChild(opt);
+            });
+            selectorDiv.appendChild(select);
+            container.appendChild(selectorDiv);
 
-            formGroup.appendChild(labelRow);
-
-            if (property["rdfs:comment"]) {
-                const helpText = document.createElement('div');
-                helpText.className = 'help-text';
-                helpText.textContent = property["rdfs:comment"];
-                formGroup.appendChild(helpText);
-            }
-
-            const sliderContainer = document.createElement('div');
-            sliderContainer.className = 'slider-container';
-            sliderContainer.style.position = 'relative';
-            sliderContainer.style.marginBottom = '1.5rem';
-
-            const slider = document.createElement('input');
-            slider.type = 'range';
-            slider.id = property["@id"];
-            slider.min = min;
-            slider.max = max;
-            slider.step = step;
-            slider.value = property["schema:defaultValue"] || min;
-            slider.style.width = '100%';
-
-            sliderContainer.appendChild(slider);
-            formGroup.appendChild(sliderContainer);
-
-            const labelsContainer = document.createElement('div');
-            labelsContainer.className = 'slider-labels';
-            labelsContainer.style.display = 'flex';
-            labelsContainer.style.justifyContent = 'space-between';
-            labelsContainer.style.marginTop = '0.25rem';
-            const minLabel = document.createElement('span');
-            minLabel.textContent = (+min).toFixed(1);
-            const maxLabel = document.createElement('span');
-            maxLabel.textContent = (+max).toFixed(1);
-            labelsContainer.appendChild(minLabel);
-            labelsContainer.appendChild(maxLabel);
-            formGroup.appendChild(labelsContainer);
-
-            slider.addEventListener('input', (e) => {
-                let val = parseFloat(e.target.value);
-                valueBadge.textContent = Number.isInteger(val) ? val : val.toFixed(2);
-                updateInstructions(property["@id"], val);
+            // Event pour mettre à jour les instructions
+            select.addEventListener('change', function() {
+                updateInstructions('genAiInstructions:cognitiveLevel', this.value);
             });
 
             // Initialiser la valeur dans instructions
-            updateInstructions(property["@id"], parseFloat(slider.value));
+            updateInstructions('genAiInstructions:cognitiveLevel', select.value);
 
-            return formGroup;
+            return container;
         }
 
         // Modifier createFormField pour utiliser createSimpleSlider pour tous les sliders numériques
@@ -911,6 +770,89 @@
 
             formGroup.appendChild(input);
             return formGroup;
+        }
+
+        // Fonction utilitaire pour obtenir les valeurs par défaut du schéma
+        async function getDefaultValues() {
+            const response = await fetch(jsonURL, { method: 'GET', headers: { 'Accept': 'application/json' } });
+            const data = await response.json();
+            const defaults = {};
+            if (data['@graph']) {
+                data['@graph'].forEach(prop => {
+                    if (prop['@type'] === 'rdf:Property' && prop['schema:defaultValue'] !== undefined) {
+                        defaults[prop['@id']] = prop['schema:defaultValue'];
+                    }
+                });
+            }
+            return defaults;
+        }
+
+        // Fonction pour filtrer les instructions (moins verbeux)
+        async function getCompactInstructions() {
+            const defaults = await getDefaultValues();
+            const compact = {};
+            for (const key in instructions) {
+                if (
+                    instructions[key] !== undefined &&
+                    instructions[key] !== null &&
+                    instructions[key] !== '' &&
+                    instructions[key] !== defaults[key]
+                ) {
+                    compact[key] = instructions[key];
+                }
+            }
+            return compact;
+        }
+
+        // Modifier updateInstructionsDisplay pour utiliser le compact
+        async function updateInstructionsDisplay() {
+            const compactInstructions = await getCompactInstructions();
+            const formattedInstructions = JSON.stringify(compactInstructions, null, 4);
+            const pre = document.createElement('pre');
+            pre.textContent = formattedInstructions;
+            
+            const instructionsContainer = document.getElementById('instructions');
+            const validationResult = document.getElementById('validation-result');
+            const copyButton = document.getElementById('copy-button');
+            
+            instructionsContainer.innerHTML = '';
+            instructionsContainer.appendChild(pre);
+            instructionsContainer.appendChild(validationResult);
+            instructionsContainer.appendChild(copyButton);
+            
+            validateInstructions(compactInstructions);
+        }
+
+        // Fonction pour initialiser le validateur (restaurée)
+        async function initializeValidator() {
+            try {
+                const response = await fetch(schemaURL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                if (!response.ok) throw new Error(`Error fetching schema: ${response.statusText}`);
+                const schema = await response.json();
+                validate = validator.compile(schema);
+                console.log('Schema loaded:', schema);
+            } catch (error) {
+                console.error('Error initializing validator:', error);
+            }
+        }
+
+        function validateInstructions(data) {
+            const validationResult = document.getElementById('validation-result');
+            if (typeof validate === 'function' && validate(data)) {
+                validationResult.innerHTML = '<div class="validation-success">✅ Instructions are valid</div>';
+            } else if (typeof validate === 'function') {
+                const errors = validate.errors.map(error =>
+                    `<div class="validation-error">❌ ${error.instancePath} ${error.message}</div>`
+                ).join('');
+                validationResult.innerHTML = `<div class="validation-error">${errors}</div>`;
+            } else {
+                validationResult.innerHTML = '';
+            }
         }
     </script>
 </body>

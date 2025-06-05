@@ -487,5 +487,59 @@
         "@id": "schema:Boolean"
       }
     }
+  ],
+  "context": "user-facing",
+  "modes": {
+    "explanation": {
+      "activateExplanationMode": true,
+      "explanationLevel": "full",
+      "targetAudience": "non_expert",
+      "format": "inline",
+      "language": "fr",
+      "style": "pedagogical"
+    }
+  },
+  "outputOptions": {
+    "includeRawReasoning": false,
+    "highlightInferences": true,
+    "traceSources": true
+  },
+  "cognitiveLevels": [
+    {
+      "value": "remember",
+      "label": "Remember",
+      "description": "Recall facts and basic concepts.",
+      "example": "List Newton's 3 laws."
+    },
+    {
+      "value": "understand",
+      "label": "Understand",
+      "description": "Explain ideas or concepts.",
+      "example": "Summarize the plot of a story."
+    },
+    {
+      "value": "apply",
+      "label": "Apply",
+      "description": "Use information in new situations.",
+      "example": "Solve a math problem using a formula."
+    },
+    {
+      "value": "analyze",
+      "label": "Analyze",
+      "description": "Draw connections among ideas.",
+      "example": "Compare two characters in a novel."
+    },
+    {
+      "value": "evaluate",
+      "label": "Evaluate",
+      "description": "Justify a stand or decision.",
+      "example": "Assess the validity of an argument."
+    },
+    {
+      "value": "create",
+      "label": "Create",
+      "description": "Produce new or original work.",
+      "example": "Write a short story based on a theme."
+    }
   ]
 }
